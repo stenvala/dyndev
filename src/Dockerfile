@@ -1,0 +1,32 @@
+FROM python:3.10
+
+RUN apt-get update
+RUN apt-get -y install nginx
+RUN apt-get -y install systemctl
+
+# Install backend
+WORKDIR /backend
+COPY ./requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /backend/requirements.txt
+RUN mkdir /backend/api
+COPY ./api /backend/api
+COPY ./handler_api.py /backend/handler_api.py
+COPY ./conf/api.service /etc/systemd/system/api.service
+RUN systemctl enable api.service
+
+# Install frontend
+WORKDIR /ui
+COPY ./ui/index.html ./index.html
+
+# Configure nginx
+COPY ./conf/nginx /etc/nginx/sites-enabled
+RUN nginx -t
+
+RUN chown www-data:www-data -R /backend
+
+COPY ./conf/wrapper.sh /var/wrapper.sh
+RUN chmod 755 /var/wrapper.sh
+
+EXPOSE 80/tcp
+CMD ["/var/wrapper.sh"]
+

@@ -1,0 +1,20 @@
+server {
+
+    server_name localhost;
+
+    root /ui;
+    
+    access_log /var/log/nginx/access.log;    
+    
+    index index.html;
+
+    location /api/ {
+        proxy_pass http://localhost:17001/api/;
+    }
+
+    location / {
+        try_files $uri $uri/ $uri.html /index.html;
+    }
+
+    listen 80;    
+}
