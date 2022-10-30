@@ -19,12 +19,12 @@ print("Starting backend")
 
 pos = "\nset bounds of first window to {0, 1, 600, 700}"
 backend = (
-    r"cd \"%s\";source venv/bin/activate;cd src; uvicorn handler_api:app --reload --port 8001"
+    r"cd \"%s\";source venv/bin/activate;cd src; uvicorn handler_api:app --reload --port 8015"
     % dir
 )
 tell.app("Terminal", 'do script "' + backend + '"' + terminal_style + pos)
 
 print("Starting frontend")
 pos = "\nset bounds of first window to {0, 1, 600, 700}"
-webclient = r"cd \"%s/src/ui\"; nvm use 16.13.2; npx ng serve" % dir
+webclient = r"cd \"%s/src/ui\"; nvm use 16.13.2; npx ng serve --port 4215" % dir
 tell.app("Terminal", 'do script "' + webclient + '"' + terminal_style + pos)

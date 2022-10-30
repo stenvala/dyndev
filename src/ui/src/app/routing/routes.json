@@ -1,0 +1,12 @@
+{
+  "tables": {
+    "path": "tables",
+    "component": "TablesRouteHomeComponent",
+    "import": "@tables/index"
+  },
+  "guide": {
+    "path": "guide",
+    "component": "GuideRouteHomeComponent",
+    "import": "@guide/index"
+  }
+}

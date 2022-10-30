@@ -8,7 +8,7 @@ import time
 print("Stopping services")
 
 # We kill applications that are listening to these ports
-ports = [4200, 8001]
+ports = [4215, 8015]
 
 
 def get_bash_pids():

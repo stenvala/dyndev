@@ -12,8 +12,8 @@ Therefore, we have custom code for api service generation.
 """
 
 SRC = Path(__file__).absolute().parent / "src" / "ui"
-URL = "http://localhost:8001/openapi.json"
-GEN = Path(__file__).absolute().parent / "src" / "ui" / "src" / "gen"
+URL = "http://localhost:8015/openapi.json"
+GEN = Path(__file__).absolute().parent / "src" / "ui" / "src" / "app" / "gen"
 GEN.mkdir(exist_ok=True)
 
 
