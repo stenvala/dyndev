@@ -1,4 +1,3 @@
-
 from applescript import tell
 import os
 
@@ -25,7 +24,7 @@ backend = (
 )
 tell.app("Terminal", 'do script "' + backend + '"' + terminal_style + pos)
 
-#print("Starting frontend")
-#pos = "\nset bounds of first window to {0, 1, 600, 700}"
-#webclient = r"cd \"%s/src/frontend\"; nvm use 16.13.2; npx ng serve" % dir
-#tell.app("Terminal", 'do script "' + webclient + '"' + terminal_style + pos)
+print("Starting frontend")
+pos = "\nset bounds of first window to {0, 1, 600, 700}"
+webclient = r"cd \"%s/src/ui\"; nvm use 16.13.2; npx ng serve" % dir
+tell.app("Terminal", 'do script "' + webclient + '"' + terminal_style + pos)

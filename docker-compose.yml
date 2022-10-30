@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  dynamo:
+    image: amazon/dynamodb-local
+    container_name: dynamo
+    hostname: dynamo
+    restart: always
+    volumes:
+      - ./docker/dynamodb:/dynamodb-data
+    ports:
+      - 17167:8000
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /dynamodb-data"
+  dyndev:
+    build: ./src
+    environment:
+      DYNAMO_HOST: dynamo
+      DYNAMO_PORT: 8000
+    ports:
+      - "17177:80"

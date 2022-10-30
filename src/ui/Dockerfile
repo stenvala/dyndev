@@ -28,5 +28,7 @@ COPY ./conf/wrapper.sh /var/wrapper.sh
 RUN chmod 755 /var/wrapper.sh
 
 EXPOSE 80/tcp
+
+WORKDIR /var/log/journal
 CMD ["/var/wrapper.sh"]
 

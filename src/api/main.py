@@ -1,13 +1,12 @@
 from fastapi import FastAPI
+from api.table import router as table_route
 
-app = FastAPI()
+app = FastAPI(title="Dynamo DB developer's app")
 
 
 @app.get("/api/")
-async def root():
-    return {"message": "Hello World"}
+async def hello_world():
+    return {"message": "Hello World!"}
 
 
-@app.get("/api/hello-world")
-async def root():
-    return {"message": "Hello World"}
+app.include_router(table_route, prefix="/api/tables")

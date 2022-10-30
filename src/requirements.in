@@ -1,4 +1,0 @@
-fastapi
-uvicorn
-gunicorn
-boto3
