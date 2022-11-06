@@ -4,6 +4,7 @@ import {
   Component,
   OnInit,
 } from '@angular/core';
+import { SideNavContent, SideNavItem, SideNavService } from '@core/services';
 import { NavigationService, ROUTE_MAP } from '@routing/index';
 
 type Link = {
@@ -18,21 +19,28 @@ type Link = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
+  isDrawerOpened = true;
+  sideNav?: SideNavContent;
   activeLink = '';
 
   links: Link[] = [
     {
-      label: 'Home',
+      label: 'Tables',
       link: ROUTE_MAP.TABLES,
     },
     {
       label: 'Guide',
       link: ROUTE_MAP.GUIDE,
     },
+    {
+      label: 'Sample app',
+      link: ROUTE_MAP.SAMPLE_APP,
+    },
   ];
 
   constructor(
     private navigationService: NavigationService,
+    private sideNavService: SideNavService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -42,9 +50,17 @@ export class AppComponent implements OnInit {
       this.activeLink = i.substring(1);
       this.cdr.detectChanges();
     });
+    this.sideNavService.sideNav$.subscribe((i) => {
+      this.sideNav = i;
+      this.cdr.detectChanges();
+    });
   }
 
   goto(link: Link) {
     this.navigationService.goto(link.link);
+  }
+
+  toggleDrawer() {
+    this.isDrawerOpened = !this.isDrawerOpened;
   }
 }

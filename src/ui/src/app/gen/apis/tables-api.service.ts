@@ -3,7 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { subsToUrl } from './../subs-to-url.func';
-import { AddRowDTO, StatusEnum, TablesDTO } from '../models/index';
+import {
+  TableItemsDTO,
+  TableScanRequestDTO,
+  TableSchemaDTO,
+  TablesDTO,
+} from '../models/index';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +16,9 @@ import { AddRowDTO, StatusEnum, TablesDTO } from '../models/index';
 export class TablesApiService {
   constructor(private http: HttpClient) {}
 
-  addRow(table: string, dto: AddRowDTO): Observable<StatusEnum> {
-    const url = subsToUrl('/api/tables/table/:table/add-row', { table });
-    return this.http.post<StatusEnum>(url, dto);
+  getTableSchema(table: string): Observable<TableSchemaDTO> {
+    const url = subsToUrl('/api/tables/table/:table/schema', { table });
+    return this.http.get<TableSchemaDTO>(url);
   }
 
   getTables(): Observable<TablesDTO> {
@@ -21,8 +26,11 @@ export class TablesApiService {
     return this.http.get<TablesDTO>(url);
   }
 
-  removeTable(table: string): Observable<StatusEnum> {
-    const url = subsToUrl('/api/tables/table/:table', { table });
-    return this.http.delete<StatusEnum>(url);
+  scanTable(
+    table: string,
+    dto: TableScanRequestDTO
+  ): Observable<TableItemsDTO> {
+    const url = subsToUrl('/api/tables/table/:table/scan', { table });
+    return this.http.post<TableItemsDTO>(url, dto);
   }
 }

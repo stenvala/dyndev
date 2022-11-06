@@ -18,8 +18,10 @@
     "importHelpers": true,
     "target": "es2017",
     "paths": {
+      "@core/*": ["src/app/core/*"],
       "@gen/*": ["src/app/gen/*"],
       "@routing/*": ["src/app/routing/*"],
+      "@sample-app/*": ["src/app/sample-app/*"],
       "@tables/*": ["src/app/tables/*"],
       "@guide/*": ["src/app/guide/*"],
       "@lib/*": ["src/app/lib/*"]

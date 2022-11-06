@@ -1,0 +1,37 @@
+<div class="action-row">
+  <button
+    class="margin-right"
+    mat-stroked-button
+    (click)="accordion?.openAll()"
+  >
+    Expand All
+  </button>
+  <button
+    class="margin-right"
+    mat-stroked-button
+    (click)="accordion?.closeAll()"
+  >
+    Collapse All
+  </button>
+  <span class="margin-right" *ngIf="updated"> Updated {{ updated }} </span>
+  <button mat-stroked-button (click)="refresh()">Refresh</button>
+</div>
+<ng-container *ngIf="schema">
+  <mat-accordion multi>
+    <mat-expansion-panel *ngFor="let i of schema.schema.types">
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ i.type }}</mat-panel-title>
+      </mat-expansion-panel-header>
+      <h2>Primary index</h2>
+      PK: {{ i.PK }} <br />
+      SK: {{ i.SK }}
+      <ng-container *ngFor="let j of [1, 2, 3, 4, 5]">
+        <ng-container *ngIf="$any(i)['GSI' + j + 'PK']">
+          <h2>GSI{{ j }}</h2>
+          GSI{{ j }}PK: {{ $any(i)["GSI" + j + "PK"] }}<br />
+          GSI{{ j }}SK: {{ $any(i)["GSI" + j + "SK"] }}
+        </ng-container>
+      </ng-container>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-container>

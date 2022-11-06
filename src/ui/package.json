@@ -20,6 +20,8 @@
     "@angular/platform-browser": "~13.0.0",
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
+    "@fortawesome/fontawesome-free": "^6.0.0",
+    "ag-grid-angular": "^28.2.1",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -28,7 +30,6 @@
     "@angular-devkit/build-angular": "~13.0.4",
     "@angular/cli": "~13.0.4",
     "@angular/compiler-cli": "~13.0.0",
-    "@openapitools/openapi-generator-cli": "^2.5.2",
     "@types/node": "^12.11.1",
     "typescript": "~4.4.3"
   }

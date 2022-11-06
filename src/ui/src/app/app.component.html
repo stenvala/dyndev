@@ -10,15 +10,63 @@
   backgroundColor="accent"
   [tabPanel]="tabPanel"
 >
+  <a mat-tab-link (click)="toggleDrawer()" class="icon" [disabled]="!sideNav">
+    <mat-icon *ngIf="!isDrawerOpened" fontSet="fa" fontIcon="fa-plus-square">
+    </mat-icon>
+    <mat-icon *ngIf="isDrawerOpened" fontSet="fa" fontIcon="fa-minus-square">
+    </mat-icon>
+  </a>
   <a
     mat-tab-link
     *ngFor="let link of links"
     (click)="goto(link)"
-    [active]="link.link.PATH.indexOf(activeLink) === 1"
+    [active]="activeLink.indexOf(link.link.PATH.substring(1)) === 0"
   >
     {{ link.label }}
   </a>
 </nav>
 <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 
-<router-outlet></router-outlet>
+<div class="route-container">
+  <mat-drawer-container class="drawer-container" autosize>
+    <mat-drawer
+      [opened]="isDrawerOpened && !!sideNav"
+      class="sidenav"
+      mode="side"
+    >
+      <ng-container *ngIf="!!sideNav">
+        <div class="side-nav-title" *ngIf="!!sideNav.title">
+          {{ sideNav.title }}
+        </div>
+        <ng-container *ngFor="let i of sideNav.content">
+          <div class="side-nav-sub-title" *ngIf="i.subtitle">
+            {{ i.subtitle }}
+          </div>
+          <ng-container *ngFor="let j of i.items">
+            <div
+              class="side-nav-item"
+              (click)="j.action()"
+              [ngClass]="{ active: j.isActive }"
+            >
+              {{ j.label }}
+            </div>
+            <ng-container *ngIf="!!j.subitems">
+              <ng-container *ngFor="let k of j.subitems">
+                <div
+                  class="side-nav-sub-item"
+                  (click)="k.action()"
+                  [ngClass]="{ active: k.isActive }"
+                >
+                  {{ k.label }}
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </mat-drawer>
+    <div class="sidenav-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-drawer-container>
+</div>

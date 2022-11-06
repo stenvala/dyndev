@@ -1,0 +1,61 @@
+.drawer-container {
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.sidenav {
+  min-width: 200px;
+}
+
+.sidenav-content {
+  padding: 10px;
+}
+[mat-tab-link] mat-icon {
+  margin-top: 12px;
+}
+
+.mat-tab-link.icon {
+  min-width: 20px !important;
+}
+
+.side-nav-title {
+  padding: 10px;
+  font-size: 120%;
+  font-weight: bold;
+}
+
+.side-nav-sub-title {
+  padding: 10px;
+  font-weight: bold;
+}
+
+.side-nav-item {
+  cursor: pointer;
+  padding: 10px;
+  padding-left: 20px;
+}
+
+.side-nav-sub-item {
+  cursor: pointer;
+  padding: 10px;
+  padding-left: 30px;
+  font-size: 90%;
+}
+
+@import "~@angular/material/theming";
+
+// Copy the palettes from your selected theme (usually theme.scss).
+$app-primary: mat-palette($mat-grey);
+$app-accent: mat-palette($mat-light-blue);
+$app-warn: mat-palette($mat-pink);
+
+// Create your Sass color vars (will be available in all the project)
+$primary: mat-color($app-primary);
+$accent: mat-color($app-accent);
+$warn: mat-color($app-warn);
+
+.active {
+  background-color: $accent;
+  color: black;
+}

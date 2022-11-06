@@ -2,11 +2,30 @@
   "tables": {
     "path": "tables",
     "component": "TablesRouteHomeComponent",
-    "import": "@tables/index"
+    "import": "@tables/index",
+    "children": {
+      "browse": {
+        "path+": "/:table/browse",
+        "component": "TablesRouteBrowseComponent"
+      },
+      "indices": {
+        "path+": "/:table/indices",
+        "component": "TablesRouteIndicesComponent"
+      },
+      "schema": {
+        "path+": "/:table/schema",
+        "component": "TablesRouteSchemaComponent"
+      }
+    }
   },
   "guide": {
     "path": "guide",
     "component": "GuideRouteHomeComponent",
     "import": "@guide/index"
+  },
+  "sampleApp": {
+    "path": "sample-app",
+    "component": "SampleAppRouteMainComponent",
+    "import": "@sample-app/index"
   }
 }

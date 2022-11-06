@@ -21,6 +21,7 @@ export class TablesRouteHomeComponent implements OnInit {
     LifeCyclesUtil.sub([this, this.cdr], this.service.getTables(), (tables) => {
       this.tables = tables;
     });
+    this.service.setTablesToSideNav()
   }
 
   ngOnDestroy() {

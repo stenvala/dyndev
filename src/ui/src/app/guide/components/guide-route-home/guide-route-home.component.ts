@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { SideNavService } from '@core/services';
 
 @Component({
   templateUrl: './guide-route-home.component.html',
@@ -6,7 +7,9 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GuideRouteHomeComponent implements OnInit {
-  constructor() {}
+  constructor(private sideNavService: SideNavService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.sideNavService.sideNav$.next(undefined);
+  }
 }
