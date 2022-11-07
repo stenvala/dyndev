@@ -1,3 +1,9 @@
+<div #busyLayer class="busy-layer">
+  <div class="icon">
+    <mat-spinner></mat-spinner>
+  </div>
+</div>
+
 <mat-toolbar color="primary">
   <mat-toolbar-row>
     <span>I am DynamoDB Developer!</span>
@@ -20,7 +26,9 @@
     mat-tab-link
     *ngFor="let link of links"
     (click)="goto(link)"
-    [active]="activeLink.indexOf(link.link.PATH.substring(1)) === 0"
+    [active]="
+      activeLink.indexOf(link.link.PATH.substring(1).split('/')[0]) === 0
+    "
   >
     {{ link.label }}
   </a>

@@ -10,6 +10,14 @@ import { TablesRouteBrowseComponent } from './components/tables-route-browse/tab
 import { TablesRouteSchemaComponent } from './components/tables-route-schema/tables-route-schema.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+
+import { AgGridModule } from 'ag-grid-angular';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TablesViewGridActionsCellComponent } from './components/tables-view-grid-actions-cell/tables-view-grid-actions-cell.component';
+import { TablesRouteEditComponent } from './components/tables-route-edit/tables-route-edit.component';
+import { TablesRowSchemaComponent } from './components/tables-row-schema/tables-row-schema.component';
 
 @NgModule({
   declarations: [
@@ -17,14 +25,21 @@ import { MatCardModule } from '@angular/material/card';
     TablesRouteIndicesComponent,
     TablesRouteBrowseComponent,
     TablesRouteSchemaComponent,
+    TablesViewGridActionsCellComponent,
+    TablesRouteEditComponent,
+    TablesRowSchemaComponent,
   ],
   imports: [
     CommonModule,
+    AgGridModule,
     MatSidenavModule,
     MatButtonModule,
     MatExpansionModule,
     MatIconModule,
     MatCardModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    MatInputModule,
   ],
 })
 export class TablesModule {}

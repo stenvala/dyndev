@@ -15,13 +15,34 @@
       "schema": {
         "path+": "/:table/schema",
         "component": "TablesRouteSchemaComponent"
+      },
+      "edit": {
+        "path+": "/:table/edit/pk/:pk/sk/:sk",
+        "component": "TablesRouteEditComponent"
       }
     }
   },
   "guide": {
     "path": "guide",
-    "component": "GuideRouteHomeComponent",
-    "import": "@guide/index"
+    "import": "@guide/index",
+    "children": {
+      "main": {
+        "path+": "/main",
+        "component": "GuideRouteHomeComponent"
+      },
+      "basics": {
+        "path+": "/basics",
+        "component": "GuideRouteBasicsComponent"
+      },
+      "python": {
+        "path+": "/python",
+        "component": "GuideRoutePythonComponent"
+      },
+      "about": {
+        "path+": "/about",
+        "component": "GuideRouteAboutComponent"
+      }
+    }
   },
   "sampleApp": {
     "path": "sample-app",

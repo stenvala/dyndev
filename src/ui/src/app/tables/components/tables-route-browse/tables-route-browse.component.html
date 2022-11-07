@@ -1,17 +1,106 @@
-<mat-expansion-panel class="margin-bottom">
+<mat-expansion-panel
+  class="margin-bottom"
+  [expanded]="state.isQueryOpen"
+  (opened)="toggleExpansionPanel('isQueryOpen', true)"
+  (closed)="toggleExpansionPanel('isQueryOpen', false)"
+>
   <mat-expansion-panel-header>
     <mat-panel-title>Query</mat-panel-title>
   </mat-expansion-panel-header>
+  <div>
+    <mat-form-field appearance="fill" class="margin-right">
+      <mat-label>Partition key</mat-label>
+      <mat-select [formControl]="selectedPK">
+        <mat-option *ngFor="let i of pkValues" [value]="i">
+          {{ i }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Value (exact)</mat-label>
+      <input matInput type="text" [formControl]="selectedPKValue" />
+      <button
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="selectedPKValue.setValue('')"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field appearance="fill" class="margin-right">
+      <mat-label>Sort key condition</mat-label>
+      <mat-select [formControl]="selectedSK">
+        <mat-option *ngFor="let i of matchOptions" [value]="i">
+          {{ i }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="margin-right" appearance="fill">
+      <mat-label>Value</mat-label>
+      <input matInput type="text" [formControl]="selectedSKValue" />
+      <button
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="selectedSKValue.setValue('')"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+    <button
+      mat-stroked-button
+      [disabled]="!selectedPKValue.valid"
+      (click)="query()"
+    >
+      Query
+    </button>
+  </div>
 </mat-expansion-panel>
 
-<mat-expansion-panel class="margin-bottom">
+<mat-expansion-panel
+  class="margin-bottom"
+  [expanded]="state.isScanOpen"
+  (opened)="toggleExpansionPanel('isScanOpen', true)"
+  (closed)="toggleExpansionPanel('isScanOpen', false)"
+>
   <mat-expansion-panel-header>
     <mat-panel-title>Scan</mat-panel-title>
   </mat-expansion-panel-header>
+  <div class="margin-bottom">
+    <button mat-stroked-button (click)="scanAll()">All</button>
+  </div>
+  <div class="margin-bottom" *ngIf="types.length > 0">
+    <mat-form-field appearance="fill" class="margin-right">
+      <mat-label>Type</mat-label>
+      <mat-select [formControl]="selectedTypeFc">
+        <mat-option *ngFor="let i of types" [value]="i">
+          {{ i }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-stroked-button (click)="scanByType()">Scan by type</button>
+  </div>
 </mat-expansion-panel>
 
-<mat-card>
-  <span class="results-title">
-    Results</span
-  ></mat-card
->
+<mat-card *ngIf="rowData" class="view-results">
+  <div class="results-title">Results</div>
+  <div class="margin-bottom-top">
+    <button mat-stroked-button (click)="exportToExcel()">
+      Export to Excel
+    </button>
+  </div>
+  <ng-container>
+    <ag-grid-angular
+      style="left: 0px; right: 0px; height: 450px"
+      class="ag-theme-balham-dark"
+      [rowData]="rowData"
+      [columnDefs]="colDefs"
+      (cellClicked)="onCellClicked($event)"
+    >
+    </ag-grid-angular>
+  </ng-container>
+</mat-card>

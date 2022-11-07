@@ -2,6 +2,7 @@
 import { FilterConditionEnum } from './filter-condition.enum';
 
 export interface TableScanRequestDTO {
-  filterVariable?: Array<string | number>;
+  filterVariable?: string;
+  filterValue?: Array<unknown>;
   filterCondition?: FilterConditionEnum;
 }

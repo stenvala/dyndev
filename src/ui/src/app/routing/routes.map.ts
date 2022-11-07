@@ -10,9 +10,23 @@ export const ROUTE_MAP = {
     SCHEMA: {
       PATH: '/tables/:table/schema',
     },
+    EDIT: {
+      PATH: '/tables/:table/edit/pk/:pk/sk/:sk',
+    },
   },
   GUIDE: {
-    PATH: '/guide',
+    MAIN: {
+      PATH: '/guide/main',
+    },
+    BASICS: {
+      PATH: '/guide/basics',
+    },
+    PYTHON: {
+      PATH: '/guide/python',
+    },
+    ABOUT: {
+      PATH: '/guide/about',
+    },
   },
   SAMPLE_APP: {
     PATH: '/sample-app',

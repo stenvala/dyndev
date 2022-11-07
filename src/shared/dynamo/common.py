@@ -23,3 +23,22 @@ class DecimalEncoder(json.JSONEncoder):
 
 def sanitize_output(data: List[dict]) -> List[dict]:
     return json.loads(json.dumps(data, cls=DecimalEncoder))
+
+
+def put_item(table_name: str, item: dict) -> None:
+    table = get_table(table_name)
+    response = table.put_item(
+        Item={k: v for k, v in item.items() if v is not None}
+    )
+
+
+def remove_item(
+    table_name: str, pk: str, sk: str, pk_key: str = "PK", sk_key: str = "SK"
+) -> None:
+    table = get_table(table_name)
+    response = table.delete_item(
+        Key={
+            pk_key: pk,
+            sk_key: sk,
+        }
+    )

@@ -7,7 +7,7 @@ from dto.table import (
 
 
 def solve_key_definition(key: str, data: dict) -> str:
-    target = data[key]
+    target = f"{data[key]}"
     values = target.split("#")
     new_target = []
     data_values = set(
@@ -54,6 +54,7 @@ def bl_solve_schema(table_name: str) -> TableSchemaDTO:
         row_schema = RowSchemaDTO(type=current_type, PK=pk, SK=sk, sample=i)
         for n in range(1, 5):
             if f"GSI{n}PK" in i:
+                print(i)
                 setattr(
                     row_schema,
                     f"GSI{n}PK",
@@ -64,8 +65,6 @@ def bl_solve_schema(table_name: str) -> TableSchemaDTO:
                     f"GSI{n}SK",
                     solve_key_definition(f"GSI{n}SK", i),
                 )
-            else:
-                break
         types[current_type] = row_schema
     types = list(types.values())
     types = sorted(types, key=lambda k: k.type)

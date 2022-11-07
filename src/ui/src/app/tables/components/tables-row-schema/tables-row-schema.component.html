@@ -1,0 +1,10 @@
+<h2>Primary index</h2>
+PK: {{ schema.PK }} <br />
+SK: {{ schema.SK }}
+<ng-container *ngFor="let j of [1, 2, 3, 4, 5]">
+  <ng-container *ngIf="$any(schema)['GSI' + j + 'PK']">
+    <h2>GSI{{ j }}</h2>
+    GSI{{ j }}PK: {{ $any(schema)["GSI" + j + "PK"] }}<br />
+    GSI{{ j }}SK: {{ $any(schema)["GSI" + j + "SK"] }}
+  </ng-container>
+</ng-container>

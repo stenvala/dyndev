@@ -10,7 +10,7 @@ class FilterConditionEnum(str, Enum):
     BEGINS_WITH = "BEGINS_WITH"
     BETWEEN = "BETWEEN"
     CONTAINS = "CONTAINS"
-    EQ = ("EQ",)
+    EQ = "EQ"
     EXISTS = "EXISTS"
     GT = "GT"
     GTE = "GTE"
@@ -19,3 +19,8 @@ class FilterConditionEnum(str, Enum):
     LTE = "LTE"
     NE = "NE"
     NOT_EXISTS = "NOT_EXISTS"
+
+
+class QueryConditionEnum(str, Enum):
+    BEGINS_WITH = "BEGINS_WITH"
+    EQ = "EQ"

@@ -2,15 +2,20 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import { SideNavContent, SideNavItem, SideNavService } from '@core/services';
+import { BusyService, ControlStateService } from '@lib/services';
 import { NavigationService, ROUTE_MAP } from '@routing/index';
 
 type Link = {
   label: string;
   link: { PATH: string };
 };
+
+const CS_KEY = 'MAIN';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +24,8 @@ type Link = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
-  isDrawerOpened = true;
+  @ViewChild('busyLayer') busyLayer?: ElementRef;
+  isDrawerOpened = this.cs.get(CS_KEY, true);
   sideNav?: SideNavContent;
   activeLink = '';
 
@@ -30,7 +36,7 @@ export class AppComponent implements OnInit {
     },
     {
       label: 'Guide',
-      link: ROUTE_MAP.GUIDE,
+      link: ROUTE_MAP.GUIDE.MAIN,
     },
     {
       label: 'Sample app',
@@ -41,13 +47,16 @@ export class AppComponent implements OnInit {
   constructor(
     private navigationService: NavigationService,
     private sideNavService: SideNavService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private busyService: BusyService,
+    private cs: ControlStateService
   ) {}
 
   ngOnInit() {
     // No need to unsubscribe in root component
     this.navigationService.activePath$.subscribe((i) => {
       this.activeLink = i.substring(1);
+      console.log(this.activeLink);
       this.cdr.detectChanges();
     });
     this.sideNavService.sideNav$.subscribe((i) => {
@@ -56,11 +65,16 @@ export class AppComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit() {
+    this.busyService.setElement(this.busyLayer!);
+  }
+
   goto(link: Link) {
     this.navigationService.goto(link.link);
   }
 
   toggleDrawer() {
     this.isDrawerOpened = !this.isDrawerOpened;
+    this.cs.set(CS_KEY, this.isDrawerOpened);
   }
 }

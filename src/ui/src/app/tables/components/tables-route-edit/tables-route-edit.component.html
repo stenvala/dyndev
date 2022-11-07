@@ -1,0 +1,22 @@
+<mat-card>
+  <div class="margin-bottom">
+    <button mat-stroked-button (click)="save()">Save</button>
+  </div>
+  <div class="margin-bottom" *ngIf="schema">
+    <tables-row-schema [schema]="schema"></tables-row-schema>
+  </div>
+  <div>
+    <mat-form-field class="margin-right" appearance="fill">
+      <mat-label>Value</mat-label>
+      <textarea
+        style="background-color: white; color: black"
+        matInput
+        cdkTextareaAutosize
+        #autosize="cdkTextareaAutosize"
+        [formControl]="value"
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="50"
+      ></textarea>
+    </mat-form-field>
+  </div>
+</mat-card>

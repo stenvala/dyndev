@@ -34,5 +34,7 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "types": ["node"],
+  "typeRoots": ["../node_modules/@types"]
 }

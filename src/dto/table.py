@@ -1,6 +1,6 @@
 from typing import Any, List, Optional
 from dto.base import BaseDTO
-from shared.enums import FilterConditionEnum
+from shared.enums import FilterConditionEnum, QueryConditionEnum
 
 
 class TableDTO(BaseDTO):
@@ -37,10 +37,31 @@ class TableSchemaDTO(BaseDTO):
 
 
 class TableScanRequestDTO(BaseDTO):
-    filter_variable: Optional[List[Any]]
+    filter_variable: Optional[str]
+    filter_value: Optional[List[Any]]
     filter_condition: Optional[FilterConditionEnum]
+
+
+class TableQueryRequestDTO(BaseDTO):
+    pk: str
+    pk_value: str
+    sk: Optional[str]
+    sk_value: Optional[str]
+    sk_condition: Optional[QueryConditionEnum]
+    index_name: Optional[str]
 
 
 class TableItemsDTO(BaseDTO):
     items: List[dict]
     last_key: Optional[str]
+
+
+class TableItemRequestDTO(BaseDTO):
+    pk: str
+    pk_value: str
+    sk: str
+    sk_value: str
+
+
+class TableItemDTO(BaseDTO):
+    item: dict

@@ -1,0 +1,23 @@
+<mat-card>
+  <h1>Base class for objects stored to Dynamo</h1>
+  <p>
+    First, you create a base class for DB. All are inherited from this. Remember
+    to add as many keys to GSIs as your table utilizes. Keep the
+    <code>TYPE</code> there. It allows us to recognize different objects and
+    deduce the schema.
+  </p>
+  <guide-show-code file="model_base"></guide-show-code>
+</mat-card>
+
+<mat-card>
+  <h1>Models define rows in Dynamo</h1>
+  <p>
+    Then, you inherit the models from your base class. Remember to have all the
+    data duplicated to attributes that you use for keys. Create the key schema
+    to static methods.
+  </p>
+  <p>We create two models: Task category</p>
+  <guide-show-code file="model_task_category"></guide-show-code>
+  <p>and Task itself</p>
+  <guide-show-code file="model_task"></guide-show-code>
+</mat-card>
