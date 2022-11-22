@@ -11,7 +11,7 @@ services:
       - 17167:8000
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /dynamodb-data"
   dyndev:
-    image: stenvala/dyndev:v0
+    image: stenvala/dyndev:v1
     container_name: dyndev-from-hub
     environment:
       DYNAMO_HOST: dynamo
