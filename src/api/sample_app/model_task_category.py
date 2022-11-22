@@ -11,5 +11,5 @@ class TaskCategoryDB(BaseDB):
         return "TASK_CATEGORY"
 
     @staticmethod
-    def sk(name: str) -> str:
-        return f"TASK_CATEGORY#{name}"
+    def sk(id: str) -> str:
+        return f"ID#{id}"

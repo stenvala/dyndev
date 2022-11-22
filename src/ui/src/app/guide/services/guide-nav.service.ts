@@ -16,12 +16,16 @@ const NAV: NavItem[] = [
     link: ROUTE_MAP.GUIDE.MAIN,
   },
   {
-    label: 'Basics',
+    label: 'STD',
     link: ROUTE_MAP.GUIDE.BASICS,
   },
   {
     label: 'Python code examples',
     link: ROUTE_MAP.GUIDE.PYTHON,
+  },
+  {
+    label: 'Provision table with CDK',
+    link: ROUTE_MAP.GUIDE.CDK,
   },
   {
     label: 'About',

@@ -34,4 +34,8 @@ export class ControlStateService {
     }
     return JSON.parse(value)['value'];
   }
+
+  remove(key: string) {
+    localStorage.removeItem(key);
+  }
 }

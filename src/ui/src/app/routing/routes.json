@@ -38,6 +38,10 @@
         "path+": "/python",
         "component": "GuideRoutePythonComponent"
       },
+      "cdk": {
+        "path+": "/cdk",
+        "component": "GuideRouteCdkComponent"
+      },
       "about": {
         "path+": "/about",
         "component": "GuideRouteAboutComponent"

@@ -1,5 +1,14 @@
 from typing import Optional
 from pydantic import BaseModel
+import json
+from decimal import Decimal
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return str(obj)
+        return json.JSONEncoder.default(self, obj)
 
 
 class BaseDB(BaseModel):
@@ -20,4 +29,7 @@ class BaseDB(BaseModel):
     destroy_time: Optional[int]
 
     def to_exclude_none_dict(self) -> dict:
-        return {**self.dict(exclude_none=True)}
+        return json.loads(
+            json.dumps(self.dict(exclude_none=True), cls=DecimalEncoder),
+            parse_float=Decimal,
+        )

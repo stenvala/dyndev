@@ -14,6 +14,8 @@ class TaskDB(BaseDB):
 
     name: str
 
+    notes: str
+
     status: TaskStatusEnum
     category_id: str
 
@@ -25,12 +27,12 @@ class TaskDB(BaseDB):
 
     @staticmethod
     def sk(id: str) -> str:
-        return f"TASK_ID#{id}"
+        return f"ID#{id}"
 
     # Use this index to query by kind
     @staticmethod
     def gsi1pk(status: str) -> str:
-        return f"TASK_STATUS#{status}"
+        return f"TASK#TASK_STATUS#{status}"
 
     @staticmethod
     def gsi1sk(last_updated: str) -> str:
@@ -39,8 +41,14 @@ class TaskDB(BaseDB):
     # Use this index to query by category
     @staticmethod
     def gsi2pk(category_id: str) -> str:
-        return f"TASK_CATEGORY#{category_id}"
+        return f"TASK#TASK_CATEGORY#{category_id}"
 
     @staticmethod
     def gsi2sk(last_updated: str) -> str:
         return f"UPDATED#{last_updated}"
+
+    def recompute_gsi_keys(self) -> None:
+        self.GSI1PK = TaskDB.gsi1pk(self.status)
+        self.GSI1SK = TaskDB.gsi1sk(self.last_updated)
+        self.GSI2PK = TaskDB.gsi2pk(self.category_id)
+        self.GSI2SK = TaskDB.gsi2sk(self.last_updated)

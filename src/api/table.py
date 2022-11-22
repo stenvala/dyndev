@@ -4,6 +4,7 @@ from api.bl.bl_solve_schema import bl_solve_schema
 from dto.status import StatusDTO
 from dto.table import (
     TableDTO,
+    TableIndicesDTO,
     TableItemDTO,
     TableItemRequestDTO,
     TableItemsDTO,
@@ -13,7 +14,12 @@ from dto.table import (
     TablesDTO,
 )
 from shared.dynamo.client import get_client
-from shared.dynamo.common import put_item, remove_item
+from shared.dynamo.common import (
+    get_indices,
+    put_item,
+    remove_item,
+    remove_table,
+)
 from shared.enums import StatusEnum
 
 
@@ -58,3 +64,14 @@ async def save_item(table: str, dto: TableItemDTO) -> TableItemDTO:
 async def delete_item(table: str, dto: TableItemRequestDTO) -> StatusDTO:
     remove_item(table, dto.pk_value, dto.sk_value, dto.pk, dto.sk)
     return StatusDTO(status=StatusEnum.OK)
+
+
+@router.delete("/table/{table}", response_model=StatusDTO)
+async def delete_table(table: str) -> StatusDTO:
+    remove_table(table)
+    return StatusDTO(status=StatusEnum.OK)
+
+
+@router.get("/table/{table}/index", response_model=TableIndicesDTO)
+async def indices(table: str) -> TableIndicesDTO:
+    return get_indices(table)

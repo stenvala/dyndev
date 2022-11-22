@@ -1,10 +1,8 @@
 <mat-card>
   <h1>Base class for objects stored to Dynamo</h1>
   <p>
-    First, you create a base class for DB. All are inherited from this. Remember
-    to add as many keys to GSIs as your table utilizes. Keep the
-    <code>TYPE</code> there. It allows us to recognize different objects and
-    deduce the schema.
+    First, you create a base class for all the objects you store to DynamoDB as
+    rows. Remember to add as many keys to GSIs as your table utilizes.
   </p>
   <guide-show-code file="model_base"></guide-show-code>
 </mat-card>
@@ -16,8 +14,19 @@
     data duplicated to attributes that you use for keys. Create the key schema
     to static methods.
   </p>
+
   <p>We create two models: Task category</p>
   <guide-show-code file="model_task_category"></guide-show-code>
+
   <p>and Task itself</p>
   <guide-show-code file="model_task"></guide-show-code>
+
+  <p>
+    You create repository module to fetch objects. (Last evaluated key is left
+    as excersice problem)
+  </p>
+  <guide-show-code file="repo_tasks"></guide-show-code>
+
+  <p>And mappers to establish DB objects from DTOs</p>
+  <guide-show-code file="mapper_tasks"></guide-show-code>
 </mat-card>

@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { subsToUrl } from './../subs-to-url.func';
 import {
   StatusDTO,
+  TableIndicesDTO,
   TableItemDTO,
   TableItemRequestDTO,
   TableItemsDTO,
@@ -25,6 +26,11 @@ export class TablesApiService {
     return this.http.post<StatusDTO>(url, dto);
   }
 
+  deleteTable(table: string): Observable<StatusDTO> {
+    const url = subsToUrl('/api/tables/table/:table', { table });
+    return this.http.delete<StatusDTO>(url);
+  }
+
   getTable(table: string, dto: TableItemRequestDTO): Observable<TableItemDTO> {
     const url = subsToUrl('/api/tables/table/:table/get', { table });
     return this.http.post<TableItemDTO>(url, dto);
@@ -38,6 +44,11 @@ export class TablesApiService {
   getTables(): Observable<TablesDTO> {
     const url = subsToUrl('/api/tables/list', {});
     return this.http.get<TablesDTO>(url);
+  }
+
+  indices(table: string): Observable<TableIndicesDTO> {
+    const url = subsToUrl('/api/tables/table/:table/index', { table });
+    return this.http.get<TableIndicesDTO>(url);
   }
 
   queryTable(

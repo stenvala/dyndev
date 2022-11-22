@@ -1,1 +1,57 @@
-<p>guide-route-home works!</p>
+<mat-card>
+  <h1>DynamoDB &mdash; Single table design STD</h1>
+
+  <p>
+    Often newcomers think
+    <a href="https://aws.amazon.com/dynamodb">DynamoDB</a> as a key-&quot;small
+    value&quot; store (in contrast to
+    <a href="https://aws.amazon.com/s3">S3</a>). It can be though and used as a
+    one, but it is much more versatile &mdash; and has it's limitations also
+    when compared to SQL or other NoSQL databases. We don't go through all the
+    nice things you can do, or can't, with DynamoDB. You should study these, for
+    example, from AWS. Some things to point out are
+  </p>
+  <ul>
+    <li>Limited transactions</li>
+    <li>Streams (for aggregation)</li>
+    <li>Point in time recovery</li>
+    <li>True serverlessness: On demand capacity</li>
+    <li>Time to live of a row</li>
+    <li>Encryption at rest</li>
+    <li>Access management</li>
+    <li>Conditional edits</li>
+  </ul>
+  <p>
+    We focus here on one crucial idea of DynamoDB: the
+    <i>Single table design</i> (STD). In STD, one models multiple different
+    entities in a single table and overrides the indices in a clever way to
+    perform fetch rows (single or multiple rows, even of different types,
+    simultaneously). This guide presents the <i>de facto</i> way to do single
+    table design.
+  </p>
+
+  <p>
+    This guide explains how you do STD for any application. When we discuss e.g.
+    index conventions, we don't really go to all the details and possibilities.
+    For example it's possible to do index with only partition key and range key
+    doesn't need to be string. But we have found out that if you utilize the
+    conventions that we present, you can do STD systematically in multiple
+    projects and reuse your general code.
+  </p>
+
+  <p>
+    We present code samples for the STD schema of the sample application. This
+    is done with python. Essential module for using DynamoDB with python is
+    <a
+      href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb.html"
+      >boto3</a
+    >. In most of the cases, you should use the Table api. Good companion,
+    arguably essential, to describing the models is
+    <a href="https://pydantic-docs.helpmanual.io/">Pydantic</a>. Use it in all
+    your python projects. There is one more thing that is a must with python
+    regardless of your stack. That is <a href="http://mypy-lang.org/">Mypy</a>.
+    With it, you can assert your typing before running the code and it avoids
+    you to get rid of may bugs. And finally, in unit testing, use
+    <a href="https://github.com/spulec/moto">moto</a>.
+  </p>
+</mat-card>

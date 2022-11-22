@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
       link: ROUTE_MAP.TABLES,
     },
     {
-      label: 'Guide',
+      label: 'DynamoDB STD',
       link: ROUTE_MAP.GUIDE.MAIN,
     },
     {
@@ -56,7 +56,6 @@ export class AppComponent implements OnInit {
     // No need to unsubscribe in root component
     this.navigationService.activePath$.subscribe((i) => {
       this.activeLink = i.substring(1);
-      console.log(this.activeLink);
       this.cdr.detectChanges();
     });
     this.sideNavService.sideNav$.subscribe((i) => {

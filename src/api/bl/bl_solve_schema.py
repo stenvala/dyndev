@@ -21,19 +21,26 @@ def solve_key_definition(key: str, data: dict) -> str:
     )
     for part in values:
         if f"{part}".lower() in data_values:
+            print(f"{part} WAS FOUND")
             field_name = next(
-                (k for k, v in data.items() if f"{part}".lower() == v),
+                (
+                    k
+                    for k, v in data.items()
+                    if f"{part}".lower() == f"{v}".lower()
+                ),
                 None,
             )
             if field_name is None:
                 new_target.append(part)
             else:
                 value = data[field_name]
-                if value == part:
+                if f"{value}".isnumeric():
                     new_target.append(f":{field_name}")
-                elif value.lower() == part:
+                elif f"{value}" == f"{part}":
+                    new_target.append(f":{field_name}")
+                elif f"{value}".lower() == part:
                     new_target.append(f":LOWER({field_name})")
-                elif value.upper() == part:
+                elif f"{value}".upper() == part:
                     new_target.append(f":UPPER({field_name})")
                 else:
                     new_target.append("!ERROR!")

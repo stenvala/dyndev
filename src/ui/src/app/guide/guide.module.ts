@@ -6,6 +6,7 @@ import { GuideRouteBasicsComponent } from './components/guide-route-basics/guide
 import { GuideRoutePythonComponent } from './components/guide-route-python/guide-route-python.component';
 import { GuideShowCodeComponent } from './components/guide-show-code/guide-show-code.component';
 import { MatCardModule } from '@angular/material/card';
+import { GuideRouteCdkComponent } from './components/guide-route-cdk/guide-route-cdk.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { MatCardModule } from '@angular/material/card';
     GuideRouteBasicsComponent,
     GuideRoutePythonComponent,
     GuideShowCodeComponent,
+    GuideRouteCdkComponent,
   ],
   imports: [CommonModule, MatCardModule],
 })

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { TablesApiService } from '@gen/apis';
 import { SideNavService } from '@core/index';
 import { TableSchema, TablesStore } from './tables.store';
-import { filter, firstValueFrom, map } from 'rxjs';
+import { filter, firstValueFrom, map, Observable, switchMap, tap } from 'rxjs';
 import { NavigationService } from '@routing/navigation.service';
 import { ROUTE_MAP } from '@routing/routes.map';
 import { ControlStateService } from '@lib/services';
@@ -20,14 +20,35 @@ export class TablesService {
     private cs: ControlStateService
   ) {}
 
-  getTables() {
+  getTables(): Observable<string[]> {
     if (!this.areTablesInitialized) {
       this.areTablesInitialized = true;
-      this.api.getTables().subscribe((tables) => {
-        this.store.tables.set(tables.collection.map((i) => i.table));
-      });
+      return this.api.getTables().pipe(
+        tap((tables) => {
+          this.store.tables.set(tables.collection.map((i) => i.table));
+        }),
+        switchMap((i) => this.getTables())
+      );
     }
     return this.store.tables.obs$;
+  }
+
+  deleteTable(table: string) {
+    return this.api.deleteTable(table).pipe(
+      tap((i) => {
+        this.store.tables.set(
+          this.store.tables.obs$.value.filter((i) => i !== table)
+        );
+        this.store.schemas.clear(table);
+        this.cs.remove(CS_SCHEMA_KEY_PREFIX + table);
+      })
+    );
+  }
+
+  getIndices(table: string) {
+    return this.store.indices.subscribeToValue(table, () =>
+      this.api.indices(table).pipe(map((i) => i.collection))
+    );
   }
 
   getSchema(table: string, reload = false) {
@@ -43,12 +64,12 @@ export class TablesService {
       () =>
         this.api.getTableSchema(table).pipe(
           map((schema) => {
-            const schemaWithupdate = {
+            const schemaWitUpdate = {
               updated: new Date().getTime(),
               schema,
             };
-            this.cs.set<TableSchema>(csKey, schemaWithupdate);
-            return schemaWithupdate;
+            this.cs.set<typeof schemaWitUpdate>(csKey, schemaWitUpdate);
+            return schemaWitUpdate;
           })
         ),
       reload
@@ -61,7 +82,7 @@ export class TablesService {
     );
     const pathParams = this.nav.params$.value;
     this.sideNavService.sideNav$.next({
-      title: 'Tables',
+      title: 'Available tables',
       content: [
         {
           items: tables.map((i) => {

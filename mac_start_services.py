@@ -19,7 +19,7 @@ print("Starting backend")
 
 pos = "\nset bounds of first window to {0, 1, 600, 700}"
 backend = (
-    r"cd \"%s\";source venv/bin/activate;cd src; uvicorn handler_api:app --reload --port 8015"
+    r"cd \"%s\";source venv/bin/activate;cd src; uvicorn handler_api:app --reload --port 8215"
     % dir
 )
 tell.app("Terminal", 'do script "' + backend + '"' + terminal_style + pos)

@@ -26,8 +26,6 @@ export class GuideShowCodeComponent implements OnInit {
     this.content = (
       await firstValueFrom(this.api.getFileContent(this.file))
     ).content;
-    const html = hljs.highlightAuto(this.content, ['python']);
-    console.log(html);
     this.cdr.detectChanges();
     setTimeout(() => {
       hljs.highlightAll();

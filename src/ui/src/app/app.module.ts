@@ -14,6 +14,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MarkdownModule } from 'ngx-markdown';
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,6 +33,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     HttpClientModule,
     MatSelectModule,
     MatSnackBarModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MarkdownModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

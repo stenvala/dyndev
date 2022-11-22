@@ -65,3 +65,19 @@ class TableItemRequestDTO(BaseDTO):
 
 class TableItemDTO(BaseDTO):
     item: dict
+
+
+class TableKeySchemaDTO(BaseDTO):
+    attribute_name: str
+    key_type: str
+
+
+class TableIndexDTO(BaseDTO):
+    index_name: str
+    key_schema: List[TableKeySchemaDTO]
+    index_size_bytes: int
+    item_count: int
+
+
+class TableIndicesDTO(BaseDTO):
+    collection: List[TableIndexDTO]

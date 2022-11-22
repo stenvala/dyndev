@@ -1,5 +1,8 @@
+import operator
 from typing import List
-from shared.dynamo.client import get_table
+from dto.table import TableIndexDTO, TableIndicesDTO, TableKeySchemaDTO
+from shared.case_converters import pascal_to_camel_obj
+from shared.dynamo.client import get_table, get_client
 import json
 from decimal import Decimal
 
@@ -42,3 +45,24 @@ def remove_item(
             sk_key: sk,
         }
     )
+
+
+def remove_table(table_name: str) -> None:
+    client = get_client()
+    response = client.delete_table(TableName=table_name)
+
+
+def get_indices(table_name: str) -> TableIndicesDTO:
+    table = get_table(table_name)
+    indices = table.global_secondary_indexes
+    indices.sort(key=operator.itemgetter("IndexName"))
+    indices = TableIndicesDTO(collection=pascal_to_camel_obj(indices))
+    indices.collection = [
+        TableIndexDTO(
+            index_name="PRIMARY",
+            index_size_bytes=table.table_size_bytes,
+            item_count=table.item_count,
+            key_schema=[pascal_to_camel_obj(i) for i in table.key_schema],
+        )
+    ] + indices.collection
+    return indices

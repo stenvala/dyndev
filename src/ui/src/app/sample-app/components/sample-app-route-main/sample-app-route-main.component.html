@@ -1,1 +1,28 @@
-<p>sample-app-route-main works!</p>
+<mat-card class="margin-bottom">
+  <button class="margin-right" mat-stroked-button (click)="addCategory()">
+    Add category
+  </button>
+  <button class="margin-right" mat-stroked-button (click)="addNote()">
+    Add task
+  </button>
+</mat-card>
+<mat-card class="margin-bottom">
+  <h1>By category</h1>
+  <sample-app-show-notes
+    *ngFor="let i of categories"
+    kind="category"
+    [category]="i"
+  >
+  </sample-app-show-notes>
+</mat-card>
+
+<mat-card class="margin-bottom">
+  <h1>By status</h1>
+  <sample-app-show-notes kind="status" status="IMPORTANT">
+  </sample-app-show-notes>
+  <sample-app-show-notes kind="status" status="PENDING">
+  </sample-app-show-notes>
+  <sample-app-show-notes kind="status" status="WAITING_FOR_INPUT">
+  </sample-app-show-notes>
+  <sample-app-show-notes kind="status" status="DONE"> </sample-app-show-notes>
+</mat-card>

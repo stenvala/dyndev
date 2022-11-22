@@ -1,1 +1,123 @@
-<p>guide-route-basics works!</p>
+<mat-card>
+  <h1>Foundations of single table design (STD)</h1>
+
+  <p>
+    Before you can start coding, you need to have your key schema designed. The
+    key schema defines access patterns and in real world large applications you
+    can't query data from DynamoDB in a way that your key schema doesn't enable.
+    There are certain conventions that should be utilized regardless of your
+    application. In the design process, you first consider what kind of entities
+    you will save to your table and then what kind of access patterns you have.
+    The key schema will follow when you have designed these.
+  </p>
+  <h2>Partitions</h2>
+  <p>
+    All DynamoDB tables have primary index. For this you have partition key PK
+    and range key a.k.a. sort key SK. The extreme performance of DynamoDB is
+    achieved by physically partitioning the data with the PK. Therefore, for all
+    queries, you need to give the PK. SK can be used to query with exact match,
+    begins with or between kind of queries. Other, like contains, don't scale
+    and aren't thus available. Keep the types of PK and SK always strings. Data
+    in partition is sorted by the range key (hence a.k.a. the sort key).
+    Therefore, the rows in each partition can be thought as two way linked
+    lists. In one query, you can fetch data only from one partition. In the
+    primary index, the (primary key, range key)-pair is unique. If you add row
+    to existing index value, the existing one is overwritten.
+  </p>
+  <p>
+    Once you have understood the partitioning, you soon realize that you
+    actually need several partitionings because you have multiple access
+    patterns. You can introduce these with
+    <i>Global secondary indices</i> (GSI). They have also partition and range
+    keys and they effectively duplicate the data (if you populate the keys of
+    the index and you provision all the data to GSIs that you always do in STD).
+    The key of the GSI is not unique i.e. there can be multiple rows with the
+    same key.
+  </p>
+  <h2>Conventions</h2>
+  <p>
+    You name the keys of the primary index as <code>PK</code> and
+    <code>SK</code>. And you do it like this always. The keys of GSIs you name
+    as <code>GSIxPK</code> and <code>GSIxSK</code> where x is the number of the
+    GSI. The name of the corresponding index is then GSIx. You need to define
+    this also. In addition to these, you always have <i>four</i> other
+    attributes (i.e. columns) in your row objects as well. You don't necessarily
+    always populate these, but in your database classes base class you introduce
+    these. These are
+  </p>
+  <ul>
+    <li>
+      <code>TYPE</code>: This defines the type of the object that is stored to
+      the row (mandatory). It allows easier debugging, perhaps object population
+      in your code and retroactively fetching the key schema (of small databases
+      by scanning the whole database).
+    </li>
+    <li>
+      <code>id</code>: This defines the id of the row and is a guid (mandatory,
+      very often you utilize this in SK)
+    </li>
+    <li>
+      <code>vrs</code>: This defines the version of the row that you can use in
+      optimistic row locking scenarios (optional)
+    </li>
+    <li>
+      <code>destroy_time</code>: This defines when DynamoDB should internally
+      remove the row (optional)
+    </li>
+  </ul>
+  <p>
+    You write with CAPITALS those row attributes which should never be revealed
+    from the backend. Other attributes you write with camel_case.
+  </p>
+  <h2>Defining a key schema &mdash; an example</h2>
+  <p>
+    Let's consider our <a href="/sample-app">sample application</a>. It is an
+    application to manage tasks. Tasks are organized under categories and they
+    have status. Statuses are fixed whereas categories can be edited. This is
+    very simple application (and in a commercial application, we might model
+    this in a graph database, such as
+    <a href="https://aws.amazon.com/neptune/">AWS Neptune</a>, with possibility
+    to tag tasks etc, but that's irrelevant now). Each tasks belongs to exactly
+    one category and to one status. In addition of fetching a given task, we
+    need to fetch tasks in a given category or with a given status in the order
+    when they have last been edited (or created).
+  </p>
+  <p>
+    We have two different row types: TASK and TASK_CATEGORY. Then we need to
+    define PK. In this application, we set the PK to the same as row type. Is it
+    always so? No. Let's consider other application in which we have users and
+    their emails. There is an access pattern to fetch all the emails of a user.
+    Then we would encode the information that the row is email and that it
+    belongs to a certain user to PK. How do we do this encoding? Answer is below
+  </p>
+  <pre><code class="language-python">f"USERS_EMAIL#{{'{'}}user_id{{'}'}}"</code></pre>
+  <p>
+    Often we do these secondary access patterns, however, to GSIs. In our sample
+    app the key schema for TASK is
+  </p>
+  <pre><code class="language-python">PK = "TASK"    
+SK = f"ID#{{'{'}}id{{'}'}}"
+GSI1PK = f"TASK#TASK_STATUS#{{'{'}}task_status{{'}'}}"
+GSI1SK = f"UPDATED#{{'{'}}last_updated{{'}'}}"
+GSI2PK = f"TASK#TASK_CATEGORY#{{'{'}}category_id{{'}'}}"
+GSI2SK = f"UPDATED#{{'{'}}last_updated{{'}'}}"</code></pre>
+  <p>
+    That being presented, you use keyword and # symbols to separate variable
+    parts from constants in keys. You may use multiple of these to build more
+    complex relations in DynamoDB. Always duplicate the information that you use
+    in keys to actual attributes (like <code>last_updated</code>). Then, you
+    never need to write any split algorithms to keys to extract data.
+  </p>
+  <p>For the key schema of the category we have</p>
+  <pre><code class="language-python">PK = "TASK_CATEGORY"    
+SK = f"ID#{{'{'}}id{{'}'}}"</code></pre>
+  <p>
+    If we had lot of categories and one query wouldn't return these all, we
+    might consider adding name to the SK because we always want the categories
+    in alphabetical order. It would be more efficient than using GSI1, because
+    it duplicates the data. Note that data in DynamoDB costs $0.1 / GB / month,
+    so perhaps using GSI for this would never be an issue for your application.
+    If we had multiple users in our system, we would inject the information
+    about user's id to (GSIx)PK.
+  </p>
+</mat-card>

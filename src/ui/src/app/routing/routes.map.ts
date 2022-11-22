@@ -24,6 +24,9 @@ export const ROUTE_MAP = {
     PYTHON: {
       PATH: '/guide/python',
     },
+    CDK: {
+      PATH: '/guide/cdk',
+    },
     ABOUT: {
       PATH: '/guide/about',
     },

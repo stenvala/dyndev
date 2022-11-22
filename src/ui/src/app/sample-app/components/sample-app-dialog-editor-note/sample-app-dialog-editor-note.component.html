@@ -1,0 +1,73 @@
+<ng-container *ngIf="categories">
+  <h1 mat-dialog-title *ngIf="isAdding">Add note</h1>
+  <h1 mat-dialog-title *ngIf="!isAdding">Edit note</h1>
+  <div mat-dialog-content>
+    <form [formGroup]="noteForm">
+      <mat-form-field appearance="fill" class="wide">
+        <mat-label>Title</mat-label>
+        <input
+          matInput
+          type="text"
+          cdkFocusInitial
+          formControlName="name"
+          autocomplete="off"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="margin-right">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="categoryId">
+          <mat-option *ngFor="let i of categories" [value]="i.id">
+            {{ i.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="margin-right">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option *ngFor="let i of statuses" [value]="i">
+            {{ i }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="wide">
+        <mat-label>Note</mat-label>
+        <textarea
+          (keydown)="keyPressedInTextarea($event)"
+          formControlName="notes"
+          matInput
+          cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="5"
+          cdkAutosizeMaxRows="20"
+        ></textarea>
+      </mat-form-field>
+    </form>
+
+    <!--
+  <mat-form-field appearance="fill">
+    <mat-label>Category</mat-label>
+  </mat-form-field>
+  --></div>
+  <div mat-dialog-actions>
+    <button
+      mat-flat-button
+      color="secondary"
+      [mat-dialog-close]="false"
+      (click)="closeDialog(false)"
+    >
+      Cancel
+    </button>
+    <button
+      [disabled]="noteForm.invalid"
+      mat-flat-button
+      color="primary"
+      [mat-dialog-close]="true"
+      (click)="closeDialog(true)"
+    >
+      Save
+    </button>
+  </div>
+</ng-container>

@@ -4,16 +4,17 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import {
-  FilterConditionEnum,
-  TableItemsDTO,
-  TableQueryRequestDTO,
-} from '@gen/models';
+import { FilterConditionEnum, TableQueryRequestDTO } from '@gen/models';
 import { NavigationService } from '@routing/navigation.service';
-import { TablesSearchService, TablesService } from '@tables/services';
-import { firstValueFrom } from 'rxjs';
 import {
-  CellClickedEvent,
+  SearchTypeEnum,
+  TablesSearchHistoryService,
+  TablesSearchService,
+  TablesService,
+} from '@tables/services';
+import { filter, firstValueFrom, map } from 'rxjs';
+import {
+  CellKeyPressEvent,
   ColDef,
   ICellRendererParams,
 } from 'ag-grid-community';
@@ -23,8 +24,9 @@ import {
   ControlStateService,
   ToasterService,
 } from '@lib/services';
-import { FormControl, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { TablesViewGridActionsCellComponent } from '../tables-view-grid-actions-cell/tables-view-grid-actions-cell.component';
+import { LifeCyclesUtil } from '@lib/util';
 
 interface ComponentState {
   isScanOpen: boolean;
@@ -47,22 +49,31 @@ export class TablesRouteBrowseComponent implements OnInit {
   state!: ComponentState;
   readonly pkValues = PK_VALUES;
   types: string[] = [];
-  selectedTypeFc = new FormControl();
-  selectedPK = new FormControl('PK');
-  selectedPKValue = new FormControl('', Validators.required);
-  selectedSK = new FormControl(FilterConditionEnum.BEGINS_WITH);
-  selectedSKValue = new FormControl();
+  queryForm = this.fb.group({
+    selectedPK: 'PK',
+    selectedPKValue: ['', Validators.required],
+    selectedSK: [FilterConditionEnum.BEGINS_WITH],
+    selectedSKValue: '',
+  });
+  scanForm = this.fb.group({
+    selectedType: '',
+  });
   matchOptions = [FilterConditionEnum.BEGINS_WITH, FilterConditionEnum.EQ];
+
+  currentSearch = 0;
+  searchCount = 0;
 
   private table!: string;
   constructor(
     private tablesService: TablesService,
     private tablesSearchService: TablesSearchService,
+    private tablesSearchHistoryService: TablesSearchHistoryService,
     private nav: NavigationService,
     private cdr: ChangeDetectorRef,
     private cs: ControlStateService,
     private busy: BusyService,
-    private toaster: ToasterService
+    private toaster: ToasterService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit() {
@@ -71,9 +82,53 @@ export class TablesRouteBrowseComponent implements OnInit {
       isQueryOpen: false,
     })!;
     this.tablesService.setTablesToSideNav();
-    this.table = this.nav.params$.value['table'] as string;
-    this.solveTypes();
-    this.scanAll();
+    LifeCyclesUtil.sub(
+      [this, this.cdr],
+      this.tablesSearchHistoryService.count.obs$.pipe(
+        filter((i) => i.key === this.table),
+        map((i) => i.value)
+      ),
+      (count) => (this.searchCount = count)
+    );
+    LifeCyclesUtil.sub([this, this.cdr], this.nav.params$, async (params) => {
+      this.table = params['table'] as string;
+      if (this.table) {
+        this.queryForm.patchValue({
+          selectedPK: 'PK',
+          selectedPKValue: '',
+          selectedSKValue: '',
+        });
+        this.tablesSearchHistoryService.init(this.table);
+        this.tablesService.setTablesToSideNav();
+        await this.solveTypes();
+        if (this.tablesSearchHistoryService.has(this.table)) {
+          this.populateSearchResultsFromIndex(0);
+        } else {
+          this.rowData = undefined;
+        }
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    LifeCyclesUtil.stop(this);
+  }
+
+  populateSearchResultsFromIndex(index: number) {
+    const results = this.tablesSearchHistoryService.get(this.table, index);
+    if (results.type === SearchTypeEnum.QUERY) {
+      this.queryForm.patchValue(results.formValue);
+    } else {
+      this.scanForm.patchValue(results.formValue);
+    }
+    this.currentSearch = index;
+    this.displayResult(results.data.items);
+  }
+
+  clearSearchHistory() {
+    this.tablesSearchHistoryService.clear(this.table);
+    this.rowData = undefined;
+    this.cdr.detectChanges();
   }
 
   private async solveTypes() {
@@ -83,7 +138,7 @@ export class TablesRouteBrowseComponent implements OnInit {
     );
     this.types = schema.schema.types.map((i) => i.type);
     if (this.types.length > 0) {
-      this.selectedTypeFc.setValue(this.types[0]);
+      this.scanForm.controls['selectedType'].setValue(this.types[0]);
     }
     this.cdr.detectChanges();
   }
@@ -98,26 +153,32 @@ export class TablesRouteBrowseComponent implements OnInit {
 
   async query() {
     const request: TableQueryRequestDTO = {
-      pk: this.selectedPK.value,
-      pkValue: this.selectedPKValue.value,
+      pk: this.queryForm.controls['selectedPK'].value,
+      pkValue: this.queryForm.controls['selectedPKValue'].value,
     };
-    const pk = this.selectedPK.value;
+    const pk = this.queryForm.controls['selectedPK'].value;
     let sk = 'SK';
     if (pk !== 'PK') {
       sk = pk.replace('PK', 'SK');
       request.indexName = pk.replace('PK', '');
     }
-    const skValue = this.selectedSKValue.value;
+    const skValue = this.queryForm.controls['selectedSKValue'].value;
     if (skValue) {
       request.sk = sk;
       request.skValue = skValue;
-      request.skCondition = this.selectedSK.value;
+      request.skCondition = this.queryForm.controls['selectedSK'].value;
     }
     this.busy.show();
     const result = await firstValueFrom(
       this.tablesSearchService.query(this.table, request)
     );
+    this.currentSearch = 0;
     this.displayResult(result.items);
+    this.tablesSearchHistoryService.add(this.table, {
+      type: SearchTypeEnum.QUERY,
+      formValue: this.queryForm.value,
+      data: result,
+    });
   }
 
   async scanAll() {
@@ -126,6 +187,14 @@ export class TablesRouteBrowseComponent implements OnInit {
       this.tablesSearchService.scan(this.table)
     );
     this.displayResult(result.items);
+    this.currentSearch = 0;
+    this.tablesSearchHistoryService.add(this.table, {
+      type: SearchTypeEnum.SCAN,
+      formValue: {
+        selectedType: this.types.length > 0 ? this.types[0] : '',
+      },
+      data: result,
+    });
   }
 
   async scanByType() {
@@ -133,10 +202,16 @@ export class TablesRouteBrowseComponent implements OnInit {
       this.tablesSearchService.scan(this.table, {
         filterVariable: 'TYPE',
         filterCondition: FilterConditionEnum.EQ,
-        filterValue: [this.selectedTypeFc.value],
+        filterValue: [this.scanForm.controls['selectedType'].value],
       })
     );
     this.displayResult(result.items);
+    this.currentSearch = 0;
+    this.tablesSearchHistoryService.add(this.table, {
+      type: SearchTypeEnum.SCAN,
+      formValue: this.scanForm.value,
+      data: result,
+    });
   }
 
   private displayResult(items: object[]) {
@@ -183,14 +258,34 @@ export class TablesRouteBrowseComponent implements OnInit {
     XLSX.writeFile(workbook, 'Data.xlsx', { compression: true });
   }
 
-  onCellClicked(event: CellClickedEvent) {
+  onCellKeyPress(event: CellKeyPressEvent | any) {
     const field = event.colDef.field;
-    if (!field) {
+    if (!field || event.type !== 'cellKeyPress') {
       return;
     }
-    const value = event.node.data[field];
-    navigator.clipboard.writeText(value);
-    this.toaster.showSuccess(`Value ${value} copied to clipboard.`);
+    switch (event.event.key) {
+      case 'c':
+        const value = event.node.data[field];
+        navigator.clipboard.writeText(value);
+        this.toaster.showSuccess(`Value ${value} copied to clipboard.`);
+        break;
+      case 'q':
+        if (event.colDef.field === 'PK') {
+          this.queryForm.patchValue({
+            selectedPKValue: event.value,
+            selecteSKValue: '',
+          });
+          this.query();
+        }
+        break;
+      case 's':
+        if (event.colDef.field === 'TYPE') {
+          this.scanForm.patchValue({
+            selectedType: event.value,
+          });
+          this.scanByType();
+        }
+    }
   }
 
   private async deleteRow(params: ICellRendererParams) {
@@ -203,6 +298,14 @@ export class TablesRouteBrowseComponent implements OnInit {
         params.data['SK']
       )
     );
+    this.rowData!.splice(params.rowIndex, 1);
+    this.tablesSearchHistoryService.updateItems(
+      this.table,
+      this.currentSearch,
+      this.rowData!
+    );
+    this.rowData = this.rowData!.filter((i) => true);
+    this.cdr.detectChanges();
     this.toaster.showSuccess(`Row removed successfully.`);
   }
 }

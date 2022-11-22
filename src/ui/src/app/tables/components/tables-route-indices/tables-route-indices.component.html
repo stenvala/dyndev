@@ -1,1 +1,17 @@
-<p>tables-route-indices works!</p>
+<div class="margin-bottom">
+  <button class="margin-right" mat-stroked-button (click)="deleteTable()">
+    Delete table
+  </button>
+</div>
+
+<mat-card *ngIf="indices">
+  <div *ngFor="let i of indices">
+    <h2>{{ i.indexName }}</h2>
+    <ul>
+      <li *ngFor="let k of i.keySchema">
+        {{ k.keyType }}: {{ k.attributeName }}
+      </li>
+    </ul>
+    Items: {{ i.itemCount }} ({{ humanFileSize(i.indexSizeBytes) }})
+  </div>
+</mat-card>

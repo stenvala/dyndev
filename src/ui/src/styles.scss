@@ -63,14 +63,43 @@ body {
 }
 
 .margin-bottom {
-  margin-bottom: 10px;
+  margin-bottom: 10px !important;
 }
 
 .margin-bottom-top {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
 }
 
 .margin-right {
-  margin-right: 10px;
+  margin-right: 10px !important;
+}
+
+code.hljs {
+  border-radius: 4px;
+}
+
+textarea,
+input {
+  caret-color: white !important;
+}
+
+@import "~@angular/material/theming";
+// Copy the palettes from your selected theme (usually theme.scss).
+$app-primary: mat-palette($mat-grey);
+$app-accent: mat-palette($mat-light-blue);
+$app-warn: mat-palette($mat-pink);
+
+// Create your Sass color vars (will be available in all the project)
+$primary: mat-color($app-primary);
+$accent: mat-color($app-accent);
+$warn: mat-color($app-warn);
+
+a {
+  color: $accent;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }

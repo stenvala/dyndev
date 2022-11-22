@@ -10,13 +10,15 @@ COPY ./requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /backend/requirements.txt
 RUN mkdir /backend/api
 COPY ./api /backend/api
+COPY ./shared /backend/shared
+COPY ./dto /backend/dto
 COPY ./handler_api.py /backend/handler_api.py
 COPY ./conf/api.service /etc/systemd/system/api.service
 RUN systemctl enable api.service
 
 # Install frontend
 WORKDIR /ui
-COPY ./ui/index.html ./index.html
+COPY ./ui/dist/app ./
 
 # Configure nginx
 COPY ./conf/nginx /etc/nginx/sites-enabled
