@@ -1,28 +1,22 @@
-<mat-card class="margin-bottom">
-  <button class="margin-right" mat-stroked-button (click)="addCategory()">
-    Add category
-  </button>
-  <button class="margin-right" mat-stroked-button (click)="addNote()">
-    Add task
-  </button>
-</mat-card>
-<mat-card class="margin-bottom">
-  <h1>By category</h1>
-  <sample-app-show-notes
-    *ngFor="let i of categories"
-    kind="category"
-    [category]="i"
-  >
-  </sample-app-show-notes>
-</mat-card>
+<ng-container *ngIf="isTableInitialized">
+  <sample-app-toolbar></sample-app-toolbar>
 
-<mat-card class="margin-bottom">
-  <h1>By status</h1>
-  <sample-app-show-notes kind="status" status="IMPORTANT">
-  </sample-app-show-notes>
-  <sample-app-show-notes kind="status" status="PENDING">
-  </sample-app-show-notes>
-  <sample-app-show-notes kind="status" status="WAITING_FOR_INPUT">
-  </sample-app-show-notes>
-  <sample-app-show-notes kind="status" status="DONE"> </sample-app-show-notes>
-</mat-card>
+  <mat-card>
+    <h1>Sample app</h1>
+    <p>
+      This is an oversimplified featureless application for managing tasks
+      utilizing DynamoDB that has STD. Start by creating categories and then add
+      notes to categories.
+    </p>
+    <p>
+      One important question arises immediately.
+      <i
+        >On the left hand menu, you might want to see count in each category and
+        status. How would you implement that in DynamoDB?</i
+      >
+      No solution is given for this in the
+      <a href="/guide/basics">design principles</a>, but there is a hint. Try to
+      find it.
+    </p>
+  </mat-card>
+</ng-container>

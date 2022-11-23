@@ -229,6 +229,9 @@ def create_api() -> Set[str]:
     apis.mkdir(exist_ok=True)
     for path, item in schema["paths"].items():
         for method, definition in item.items():
+            tags = definition.get("tags", [])
+            if "EXCLUDE" in tags:
+                continue
             service = find_service(path, method, definition)
             if service is None:
                 continue

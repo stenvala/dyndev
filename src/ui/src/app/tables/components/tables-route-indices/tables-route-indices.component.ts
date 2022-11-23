@@ -35,8 +35,10 @@ export class TablesRouteIndicesComponent implements OnInit {
   }
 
   async deleteTable() {
-    await firstValueFrom(this.tablesService.deleteTable(this.table));
-    this.nav.goto(ROUTE_MAP.TABLES);
+    if (confirm('Are you sure you want to delete the table?')) {
+      await firstValueFrom(this.tablesService.deleteTable(this.table));
+      this.nav.goto(ROUTE_MAP.TABLES);
+    }
   }
 
   // https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string

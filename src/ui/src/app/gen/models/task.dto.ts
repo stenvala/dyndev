@@ -7,5 +7,5 @@ export interface TaskDTO {
   notes: string;
   status: TaskStatusEnum;
   categoryId: string;
-  lastUpdated: string;
+  lastUpdated: number;
 }

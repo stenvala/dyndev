@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -9,6 +10,8 @@ import {
 import { SideNavContent, SideNavItem, SideNavService } from '@core/services';
 import { BusyService, ControlStateService } from '@lib/services';
 import { NavigationService, ROUTE_MAP } from '@routing/index';
+import { firstValueFrom } from 'rxjs';
+import { HttpConfigInterceptor, TOKEN_URL } from './core';
 
 type Link = {
   label: string;
@@ -49,7 +52,8 @@ export class AppComponent implements OnInit {
     private sideNavService: SideNavService,
     private cdr: ChangeDetectorRef,
     private busyService: BusyService,
-    private cs: ControlStateService
+    private cs: ControlStateService,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -62,6 +66,7 @@ export class AppComponent implements OnInit {
       this.sideNav = i;
       this.cdr.detectChanges();
     });
+    this.solveTokenNeed();
   }
 
   ngAfterViewInit() {
@@ -75,5 +80,12 @@ export class AppComponent implements OnInit {
   toggleDrawer() {
     this.isDrawerOpened = !this.isDrawerOpened;
     this.cs.set(CS_KEY, this.isDrawerOpened);
+  }
+
+  private async solveTokenNeed() {
+    HttpConfigInterceptor.isTokenNeeded = (
+      await firstValueFrom(this.http.get<{ is: boolean }>(TOKEN_URL))
+    ).is;
+    HttpConfigInterceptor.isTokenNeededSolved$.next(true);
   }
 }

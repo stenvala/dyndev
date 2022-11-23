@@ -17,6 +17,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { SampleAppShowNotesComponent } from './components/sample-app-show-notes/sample-app-show-notes.component';
 import { SampleAppShowNoteComponent } from './components/sample-app-show-note/sample-app-show-note.component';
 import { MarkdownModule } from 'ngx-markdown';
+import { SampleAppRouteShowNotesComponent } from './components/sample-app-route-show-notes/sample-app-route-show-notes.component';
+import { SampleAppToolbarComponent } from './components/sample-app-toolbar/sample-app-toolbar.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +27,8 @@ import { MarkdownModule } from 'ngx-markdown';
     SampleAppDialogEditorNoteComponent,
     SampleAppShowNotesComponent,
     SampleAppShowNoteComponent,
+    SampleAppRouteShowNotesComponent,
+    SampleAppToolbarComponent,
   ],
   imports: [
     CommonModule,

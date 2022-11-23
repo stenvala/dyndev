@@ -8,7 +8,7 @@ services:
     volumes:
       - ./docker/dynamodb:/dynamodb-data
     ports:
-      - 17167:8000
+      - 8000:8000
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /dynamodb-data"
   dyndev:
     image: stenvala/dyndev:v1
@@ -16,5 +16,6 @@ services:
     environment:
       DYNAMO_HOST: dynamo
       DYNAMO_PORT: 8000
+      DYNDEV_TOKEN: token
     ports:
       - "17177:80"

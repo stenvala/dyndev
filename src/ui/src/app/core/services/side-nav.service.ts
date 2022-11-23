@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 
 export interface SideNavItem {
   label: string;
-  action: () => void;
+  action?: () => void;
   isActive?: boolean;
   subitems?: SideNavItem[];
 }

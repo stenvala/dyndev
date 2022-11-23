@@ -33,5 +33,11 @@ export const ROUTE_MAP = {
   },
   SAMPLE_APP: {
     PATH: '/sample-app',
+    CATEGORY: {
+      PATH: '/sample-app/category/:categoryId',
+    },
+    STATUS: {
+      PATH: '/sample-app/status/:status',
+    },
   },
 };

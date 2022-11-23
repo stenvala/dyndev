@@ -51,6 +51,16 @@
   "sampleApp": {
     "path": "sample-app",
     "component": "SampleAppRouteMainComponent",
-    "import": "@sample-app/index"
+    "import": "@sample-app/index",
+    "children": {
+      "category": {
+        "path+": "/category/:categoryId",
+        "component": "SampleAppRouteShowNotesComponent"
+      },
+      "status": {
+        "path+": "/status/:status",
+        "component": "SampleAppRouteShowNotesComponent"
+      }
+    }
   }
 }

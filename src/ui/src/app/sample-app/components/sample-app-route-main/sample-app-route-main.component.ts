@@ -42,41 +42,20 @@ export class SampleAppRouteMainComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.sideNavService.sideNav$.next(undefined);
     const tables = await firstValueFrom(this.tablesService.getTables());
     if (!tables.some((i) => i === TABLE_NAME)) {
-      firstValueFrom(this.service.createTable());
+      await firstValueFrom(this.service.createTable());
       this.toaster.showSuccess(
         'Sample app is initialized. You have new table in your DynamoDB!'
       );
     }
+    await this.service.initSideNav();
+    this.isTableInitialized = true;
+    this.cdr.detectChanges();
     LifeCyclesUtil.sub(
       [this, this.cdr],
       this.service.getTaskCategories(),
       (cats) => (this.categories = cats)
     );
-  }
-
-  addCategory() {
-    const dialogRef = this.dialog.open(SampleAppDialogAddCategoryComponent, {});
-    dialogRef
-      .afterClosed()
-      .subscribe(async (data: SampleAppDialogAddCategoryComponentOutput) => {
-        if (data) {
-          const category = await firstValueFrom(
-            this.service.createTaskCategory(data.name)
-          );
-          this.toaster.showSuccess(
-            `Category ${category.name} created successfully.`
-          );
-        }
-      });
-  }
-
-  addNote() {
-    const width = Math.min(900, window.innerWidth - 100);
-    this.dialog.open(SampleAppDialogEditorNoteComponent, {
-      width: `${width}px`,
-    });
   }
 }

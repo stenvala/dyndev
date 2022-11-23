@@ -14,6 +14,7 @@ import {
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TaskCategoryDTO, TaskDTO, TaskStatusEnum } from '@gen/models';
 import { BusyService, ToasterService } from '@lib/services';
+import { NavigationService } from '@routing/navigation.service';
 import { SampleAppService } from '@sample-app/services';
 import { firstValueFrom } from 'rxjs';
 
@@ -42,11 +43,14 @@ export class SampleAppDialogEditorNoteComponent implements OnInit {
     private service: SampleAppService,
     private toaster: ToasterService,
     private cdr: ChangeDetectorRef,
-    private busyService: BusyService
+    private busyService: BusyService,
+    private nav: NavigationService
   ) {
+    const categoryId = this.nav.params$.value['categoryId'] ?? '';
+    const status = this.nav.params$.value['status'] ?? 'WAITING_FOR_INPUT';
     this.noteForm = this.fb.group({
-      categoryId: [''],
-      status: ['PENDING'],
+      categoryId: [categoryId],
+      status: [status],
       name: ['', Validators.required],
       notes: ['', Validators.required],
     });
@@ -70,7 +74,7 @@ export class SampleAppDialogEditorNoteComponent implements OnInit {
         name: this.note.name,
         notes: this.note.notes,
       });
-    } else {
+    } else if (this.noteForm.controls['categoryId'].value === '') {
       this.noteForm.patchValue({ categoryId: this.categories[0].id });
     }
     this.cdr.detectChanges();

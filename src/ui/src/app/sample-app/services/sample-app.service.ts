@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { SampleAppApiService } from '@gen/apis';
-import { SideNavService } from '@core/index';
-import { map, switchMap, tap } from 'rxjs';
-import { NavigationService } from '@routing/navigation.service';
-import { ControlStateService } from '@lib/services';
+import { firstValueFrom, map, switchMap, tap } from 'rxjs';
 import { SampleAppStore } from './sample-app.store';
 import { CreateTaskDTO, TaskDTO, TaskStatusEnum } from '@gen/models';
+import { SideNavItem, SideNavService } from '@core/services';
+import { NavigationService } from '@routing/navigation.service';
+import { ROUTE_MAP } from '@routing/routes.map';
 
 const CS_SCHEMA_KEY_PREFIX = 'TABLE_SCHEMA.';
 
@@ -13,7 +13,9 @@ const CS_SCHEMA_KEY_PREFIX = 'TABLE_SCHEMA.';
 export class SampleAppService {
   constructor(
     private store: SampleAppStore,
-    private api: SampleAppApiService
+    private api: SampleAppApiService,
+    private sideNavService: SideNavService,
+    private nav: NavigationService
   ) {}
 
   createTable() {
@@ -109,4 +111,50 @@ export class SampleAppService {
   }
 
   removeTask(taskId: string) {}
+
+  async initSideNav() {
+    const categorySubItems = await this.getCategorySubItemsToMenu();
+
+    this.sideNavService.sideNav$.next({
+      content: [
+        {
+          items: [
+            {
+              label:
+                categorySubItems.length === 0
+                  ? 'Not yet any categories'
+                  : 'By category',
+              subitems: categorySubItems,
+            },
+            {
+              label: 'By status',
+              subitems: this.getStatusSubItemsToMenu(),
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  private async getCategorySubItemsToMenu(): Promise<SideNavItem[]> {
+    const categories = await firstValueFrom(this.getTaskCategories());
+    return categories.map((i) => {
+      return {
+        label: i.name,
+        action: () =>
+          this.nav.goto(ROUTE_MAP.SAMPLE_APP.CATEGORY, { categoryId: i.id }),
+        isActive: this.nav.params$.value['categoryId'] === i.id,
+      };
+    });
+  }
+
+  private getStatusSubItemsToMenu() {
+    return Object.keys(TaskStatusEnum).map((i) => {
+      return {
+        label: i,
+        action: () => this.nav.goto(ROUTE_MAP.SAMPLE_APP.STATUS, { status: i }),
+        isActive: this.nav.params$.value['status'] === i,
+      };
+    });
+  }
 }

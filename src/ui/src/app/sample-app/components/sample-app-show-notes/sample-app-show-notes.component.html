@@ -1,8 +1,13 @@
-<ng-container *ngIf="noteIdList && noteIdList.length > 0">
-  <h2>{{ title }}</h2>
+<mat-card class="margin-bottom">
+  <h1>{{ title }}</h1>
+  <ng-container *ngIf="noteIdList && noteIdList.length > 0"> </ng-container>
 
-  <sample-app-show-note
-    *ngFor="let i of noteIdList"
-    [noteId]="i"
-  ></sample-app-show-note>
-</ng-container>
+  <ng-container *ngIf="noteIdList && noteIdList.length == 0">
+    No tasks here
+  </ng-container>
+</mat-card>
+
+<sample-app-show-note
+  *ngFor="let i of noteIdList"
+  [noteId]="i"
+></sample-app-show-note>

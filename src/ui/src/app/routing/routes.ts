@@ -1,15 +1,16 @@
 import { Routes } from '@angular/router';
 import { TablesRouteBrowseComponent } from '@tables/index';
 import { TablesRouteIndicesComponent } from '@tables/index';
-import { GuideRouteCdkComponent } from '@guide/index';
-import { TablesRouteSchemaComponent } from '@tables/index';
-import { GuideRouteAboutComponent } from '@guide/index';
-import { TablesRouteHomeComponent } from '@tables/index';
-import { GuideRouteBasicsComponent } from '@guide/index';
-import { GuideRoutePythonComponent } from '@guide/index';
-import { TablesRouteEditComponent } from '@tables/index';
-import { GuideRouteHomeComponent } from '@guide/index';
 import { SampleAppRouteMainComponent } from '@sample-app/index';
+import { GuideRouteHomeComponent } from '@guide/index';
+import { GuideRouteBasicsComponent } from '@guide/index';
+import { TablesRouteHomeComponent } from '@tables/index';
+import { GuideRouteCdkComponent } from '@guide/index';
+import { GuideRouteAboutComponent } from '@guide/index';
+import { TablesRouteEditComponent } from '@tables/index';
+import { SampleAppRouteShowNotesComponent } from '@sample-app/index';
+import { TablesRouteSchemaComponent } from '@tables/index';
+import { GuideRoutePythonComponent } from '@guide/index';
 
 export const ROUTES: Routes = [
   {
@@ -88,5 +89,19 @@ export const ROUTES: Routes = [
     canDeactivate: [],
     data: {},
     component: SampleAppRouteMainComponent,
+  },
+  {
+    path: 'sample-app/category/:categoryId',
+    canActivate: [],
+    canDeactivate: [],
+    data: {},
+    component: SampleAppRouteShowNotesComponent,
+  },
+  {
+    path: 'sample-app/status/:status',
+    canActivate: [],
+    canDeactivate: [],
+    data: {},
+    component: SampleAppRouteShowNotesComponent,
   },
 ];

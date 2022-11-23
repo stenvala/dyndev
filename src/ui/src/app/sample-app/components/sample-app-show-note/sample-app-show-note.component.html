@@ -1,9 +1,9 @@
-<div *ngIf="task && latch">
-  <h3>{{ task.name }}</h3>
+<mat-card *ngIf="task && latch" class="margin-bottom">
+  <h2>{{ task.name }}</h2>
   <div class="margin-bottom">
     <button mat-stroked-button (click)="edit()">Edit</button>
   </div>
   <markdown>
     {{ task.notes }}
   </markdown>
-</div>
+</mat-card>

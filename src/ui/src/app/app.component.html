@@ -51,7 +51,11 @@
             {{ i.subtitle }}
           </div>
           <ng-container *ngFor="let j of i.items">
+            <div *ngIf="!j.action" class="side-nav-sub-title">
+              {{ j.label }}
+            </div>
             <div
+              *ngIf="j.action"
               class="side-nav-item"
               (click)="j.action()"
               [ngClass]="{ active: j.isActive }"
@@ -62,7 +66,7 @@
               <ng-container *ngFor="let k of j.subitems">
                 <div
                   class="side-nav-sub-item"
-                  (click)="k.action()"
+                  (click)="k.action!()"
                   [ngClass]="{ active: k.isActive }"
                 >
                   {{ k.label }}

@@ -1,0 +1,8 @@
+<sample-app-toolbar></sample-app-toolbar>
+
+<ng-container *ngIf="latch">
+  <sample-app-show-notes *ngIf="status" kind="status" [status]="status">
+  </sample-app-show-notes>
+  <sample-app-show-notes *ngIf="category" kind="category" [category]="category">
+  </sample-app-show-notes>
+</ng-container>
