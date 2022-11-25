@@ -5,6 +5,7 @@ import { IMappedStore, StateManagementStoreFactory } from '@lib/services';
 export enum SearchTypeEnum {
   QUERY = 'QUERY',
   SCAN = 'SCAN',
+  SCAN_ALL = 'SCAN_ALL',
 }
 
 const MAX_SAVE_SEARCH_LENGTH = 10;
@@ -55,6 +56,10 @@ export class TablesSearchHistoryService {
     }
     this.count.set(tableName, this.searches[tableName].length);
     sessionStorage.setItem(LS_KEY, JSON.stringify(this.searches));
+  }
+
+  set(tableName: string, index: number, search: SavedSearch) {
+    this.searches[tableName][index] = search;
   }
 
   get(tableName: string, index: number): SavedSearch {

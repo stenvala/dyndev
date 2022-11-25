@@ -8,11 +8,13 @@ from decimal import Decimal
 
 PRIMARY_INDEX_NAME = "PRIMARY"
 
+
 def get_all_items(table_name: str) -> List[dict]:
     table = get_table(table_name)
     response = table.scan()
     data = response.get("Items")
-    while "LastEvaluatedKey" in response:
+    # At most 100 k items is fetched here
+    while "LastEvaluatedKey" in response or len(data) > 100000:
         response = table.scan(ExclusiveStartKey=response["LastEvaluatedKey"])
         data.extend(response["Items"])
     return data

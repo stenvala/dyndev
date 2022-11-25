@@ -21,7 +21,8 @@ WORKDIR /ui
 COPY ./ui/dist/app ./
 
 # Configure nginx
-COPY ./conf/nginx /etc/nginx/sites-enabled
+COPY ./conf/nginx /etc/nginx/sites-available/default
+
 RUN nginx -t
 
 RUN chown www-data:www-data -R /backend

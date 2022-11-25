@@ -8,4 +8,5 @@ export interface TableQueryRequestDTO {
   skValue?: string;
   skCondition?: QueryConditionEnum;
   indexName?: string;
+  lastKey?: string;
 }

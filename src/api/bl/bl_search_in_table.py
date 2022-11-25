@@ -15,7 +15,9 @@ from shared.enums import FilterConditionEnum
 
 def bl_scan(table_name: str, dto: TableScanRequestDTO) -> TableItemsDTO:
     table = get_table(table_name)
-    kwargs = {}
+    kwargs = {"Limit": 1000}
+    if dto.last_key:
+        kwargs["ExclusiveStartKey"] = json.loads(dto.last_key)
     if dto.filter_variable:
         kwargs["ExpressionAttributeNames"] = {"#field": dto.filter_variable}
         if dto.filter_condition == FilterConditionEnum.EQ:
@@ -24,18 +26,24 @@ def bl_scan(table_name: str, dto: TableScanRequestDTO) -> TableItemsDTO:
             }
             kwargs["FilterExpression"] = "#field = :value"
     data = table.scan(**kwargs)
-    return TableItemsDTO(items=sanitize_output(data["Items"]))
+    last_key = data.get("LastEvaluatedKey")
+    return TableItemsDTO(
+        items=sanitize_output(data["Items"]),
+        last_key=json.dumps(last_key) if last_key is not None else None,
+    )
 
 
 def bl_query(table_name: str, dto: TableQueryRequestDTO) -> TableItemsDTO:
     table = get_table(table_name)
+
     kwargs = {
+        "Limit": 1000,
         "KeyConditions": {
             dto.pk: {
                 "AttributeValueList": [dto.pk_value],
                 "ComparisonOperator": "EQ",
             }
-        }
+        },
     }
     if dto.index_name and dto.index_name != PRIMARY_INDEX_NAME:
         kwargs["IndexName"] = dto.index_name
@@ -44,8 +52,14 @@ def bl_query(table_name: str, dto: TableQueryRequestDTO) -> TableItemsDTO:
             "AttributeValueList": [dto.sk_value],
             "ComparisonOperator": dto.sk_condition,
         }
+    if dto.last_key:
+        kwargs["ExclusiveStartKey"] = json.loads(dto.last_key)
     data = table.query(**kwargs)
-    return TableItemsDTO(items=sanitize_output(data["Items"]))
+    last_key = data.get("LastEvaluatedKey")
+    return TableItemsDTO(
+        items=sanitize_output(data["Items"]),
+        last_key=json.dumps(last_key) if last_key is not None else None,
+    )
 
 
 def bl_get(table_name: str, dto: TableItemRequestDTO) -> TableItemDTO:

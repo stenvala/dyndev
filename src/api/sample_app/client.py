@@ -4,12 +4,18 @@ from mypy_boto3_dynamodb import DynamoDBClient, DynamoDBServiceResource
 from mypy_boto3_dynamodb.service_resource import Table
 
 
+def get_url() -> str:
+    return os.environ.get("DYNAMO_HOST", "localhost")
+
+
+def get_port() -> str:
+    return os.environ.get("DYNAMO_PORT", 8000)
+
+
 def get_client() -> DynamoDBClient:
-    url = os.environ.get("DYNAMO_HOST", "localhost")
-    port = os.environ.get("DYNAMO_PORT", 19702)
     return boto3.client(
         "dynamodb",
-        endpoint_url=f"http://{url}:{port}",
+        endpoint_url=f"http://{get_url()}:{get_port()}",
         region_name="us-east-1",
         aws_access_key_id="anything",
         aws_secret_access_key="anything",
@@ -17,11 +23,9 @@ def get_client() -> DynamoDBClient:
 
 
 def get_resource() -> DynamoDBServiceResource:
-    url = os.environ.get("DYNAMO_HOST", "localhost")
-    port = os.environ.get("DYNAMO_PORT", 19702)
     return boto3.resource(
         "dynamodb",
-        endpoint_url=f"http://{url}:{port}",
+        endpoint_url=f"http://{get_url()}:{get_port()}",
         region_name="us-east-1",
         aws_access_key_id="anything",
         aws_secret_access_key="anything",

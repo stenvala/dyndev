@@ -1,5 +1,10 @@
-<mat-expansion-panel class="margin-bottom" [expanded]="state.isQueryOpen" *ngIf="indices && indices.length > 0"
-  (opened)="toggleExpansionPanel('isQueryOpen', true)" (closed)="toggleExpansionPanel('isQueryOpen', false)">
+<mat-expansion-panel
+  class="margin-bottom"
+  [expanded]="state.isQueryOpen"
+  *ngIf="indices && indices.length > 0"
+  (opened)="toggleExpansionPanel('isQueryOpen', true)"
+  (closed)="toggleExpansionPanel('isQueryOpen', false)"
+>
   <mat-expansion-panel-header>
     <mat-panel-title>Query</mat-panel-title>
   </mat-expansion-panel-header>
@@ -8,7 +13,10 @@
       <mat-form-field appearance="fill" class="margin-right">
         <mat-label>Partition key</mat-label>
         <mat-select formControlName="selectedPK">
-          <mat-option *ngFor="let i of indices" [value]="i.keySchema[0].attributeName">
+          <mat-option
+            *ngFor="let i of indices"
+            [value]="i.keySchema[0].attributeName"
+          >
             {{ i.keySchema[0].attributeName }}
           </mat-option>
         </mat-select>
@@ -16,8 +24,12 @@
       <mat-form-field appearance="fill">
         <mat-label>Value (exact)</mat-label>
         <input matInput type="text" formControlName="selectedPKValue" />
-        <button matSuffix mat-icon-button aria-label="Clear"
-          (click)="queryForm.controls['selectedPKValue'].setValue('')">
+        <button
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="queryForm.controls['selectedPKValue'].setValue('')"
+        >
           <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
@@ -35,20 +47,32 @@
       <mat-form-field class="margin-right" appearance="fill">
         <mat-label>Value</mat-label>
         <input matInput type="text" formControlName="selectedSKValue" />
-        <button matSuffix mat-icon-button aria-label="Clear"
-          (click)="queryForm.controls['selectedSKValue'].setValue('')">
+        <button
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="queryForm.controls['selectedSKValue'].setValue('')"
+        >
           <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
-      <button mat-stroked-button [disabled]="queryForm.invalid" (click)="query()">
+      <button
+        mat-stroked-button
+        [disabled]="queryForm.invalid"
+        (click)="query()"
+      >
         Query
       </button>
     </div>
   </form>
 </mat-expansion-panel>
 
-<mat-expansion-panel class="margin-bottom" [expanded]="state.isScanOpen"
-  (opened)="toggleExpansionPanel('isScanOpen', true)" (closed)="toggleExpansionPanel('isScanOpen', false)">
+<mat-expansion-panel
+  class="margin-bottom"
+  [expanded]="state.isScanOpen"
+  (opened)="toggleExpansionPanel('isScanOpen', true)"
+  (closed)="toggleExpansionPanel('isScanOpen', false)"
+>
   <mat-expansion-panel-header>
     <mat-panel-title>Scan</mat-panel-title>
   </mat-expansion-panel-header>
@@ -76,14 +100,30 @@
     <button mat-stroked-button (click)="exportToExcel()" class="margin-right">
       Export to Excel
     </button>
+    <button
+      mat-stroked-button
+      (click)="loadMore()"
+      class="margin-right"
+      *ngIf="hasLastKey"
+    >
+      Load more
+    </button>
     <ng-container *ngIf="searchCount > 1">
-      <button mat-icon-button color="accent" [disabled]="currentSearch === 0"
-        (click)="populateSearchResultsFromIndex(currentSearch - 1)">
+      <button
+        mat-icon-button
+        color="accent"
+        [disabled]="currentSearch === 0"
+        (click)="populateSearchResultsFromIndex(currentSearch - 1)"
+      >
         <mat-icon fontSet="fa" fontIcon="fa-caret-left"> </mat-icon>
       </button>
       <span> {{ currentSearch + 1 }}/{{ searchCount }} </span>
-      <button mat-icon-button color="accent" (click)="populateSearchResultsFromIndex(currentSearch + 1)"
-        [disabled]="currentSearch + 1 === searchCount">
+      <button
+        mat-icon-button
+        color="accent"
+        (click)="populateSearchResultsFromIndex(currentSearch + 1)"
+        [disabled]="currentSearch + 1 === searchCount"
+      >
         <mat-icon fontSet="fa" fontIcon="fa-caret-right"> </mat-icon>
       </button>
     </ng-container>
@@ -94,7 +134,12 @@
     <span> | </span>
     <span> showing {{ rowData.length }} rows </span>
   </div>
-  <ag-grid-angular style="left: 0px; right: 0px; height: 450px" class="ag-theme-balham-dark" [rowData]="rowData"
-    [columnDefs]="colDefs" (cellKeyPress)="onCellKeyPress($event)">
+  <ag-grid-angular
+    style="left: 0px; right: 0px; height: 450px"
+    class="ag-theme-balham-dark"
+    [rowData]="rowData"
+    [columnDefs]="colDefs"
+    (cellKeyPress)="onCellKeyPress($event)"
+  >
   </ag-grid-angular>
 </mat-card>

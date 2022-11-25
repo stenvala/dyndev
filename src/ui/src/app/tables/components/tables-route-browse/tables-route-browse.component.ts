@@ -11,6 +11,7 @@ import {
 } from '@gen/models';
 import { NavigationService } from '@routing/navigation.service';
 import {
+  SavedSearch,
   SearchTypeEnum,
   TablesSearchHistoryService,
   TablesSearchService,
@@ -59,7 +60,7 @@ export class TablesRouteBrowseComponent implements OnInit {
     selectedType: '',
   });
   matchOptions = [FilterConditionEnum.BEGINS_WITH, FilterConditionEnum.EQ];
-
+  hasLastKey = false;
   currentSearch = 0;
   searchCount = 0;
 
@@ -123,6 +124,7 @@ export class TablesRouteBrowseComponent implements OnInit {
 
   populateSearchResultsFromIndex(index: number) {
     const results = this.tablesSearchHistoryService.get(this.table, index);
+    this.hasLastKey = !!results.data.lastKey;
     if (results.type === SearchTypeEnum.QUERY) {
       this.queryForm.patchValue(results.formValue);
     } else {
@@ -179,12 +181,48 @@ export class TablesRouteBrowseComponent implements OnInit {
       this.tablesSearchService.query(this.table, request)
     );
     this.currentSearch = 0;
-    this.displayResult(result.items);
     this.tablesSearchHistoryService.add(this.table, {
       type: SearchTypeEnum.QUERY,
       formValue: this.queryForm.value,
       data: result,
     });
+    this.hasLastKey = !!result.lastKey;
+    this.displayResult(result.items);
+  }
+
+  private async queryMore(search: SavedSearch) {
+    const request: TableQueryRequestDTO = {
+      pk: this.queryForm.controls['selectedPK'].value,
+      pkValue: this.queryForm.controls['selectedPKValue'].value,
+    };
+    const pk = this.queryForm.controls['selectedPK'].value;
+    const index = this.indices.find(
+      (i) => i.keySchema[0].attributeName === pk
+    )!;
+    request.indexName = index.indexName;
+    const skValue = this.queryForm.controls['selectedSKValue'].value;
+    if (skValue) {
+      request.sk = index.keySchema[1].attributeName;
+      request.skValue = skValue;
+      request.skCondition = this.queryForm.controls['selectedSK'].value;
+    }
+    request.lastKey = search.data.lastKey;
+    this.busy.show();
+    const result = await firstValueFrom(
+      this.tablesSearchService.query(this.table, request)
+    );
+
+    const items = search.data.items.concat(result.items);
+    this.tablesSearchHistoryService.set(this.table, this.currentSearch, {
+      type: SearchTypeEnum.QUERY,
+      formValue: this.queryForm.value,
+      data: {
+        items,
+        lastKey: result.lastKey,
+      },
+    });
+    this.hasLastKey = !!result.lastKey;
+    this.displayResult(items);
   }
 
   async scanAll() {
@@ -192,15 +230,38 @@ export class TablesRouteBrowseComponent implements OnInit {
     const result = await firstValueFrom(
       this.tablesSearchService.scan(this.table)
     );
-    this.displayResult(result.items);
     this.currentSearch = 0;
     this.tablesSearchHistoryService.add(this.table, {
-      type: SearchTypeEnum.SCAN,
+      type: SearchTypeEnum.SCAN_ALL,
       formValue: {
         selectedType: this.types.length > 0 ? this.types[0] : '',
       },
       data: result,
     });
+    this.hasLastKey = !!result.lastKey;
+    this.displayResult(result.items);
+  }
+
+  private async scanAllMore(search: SavedSearch) {
+    this.busy.show();
+    const result = await firstValueFrom(
+      this.tablesSearchService.scan(this.table, {
+        lastKey: search.data.lastKey,
+      })
+    );
+    const items = search.data.items.concat(result.items);
+    this.tablesSearchHistoryService.set(this.table, this.currentSearch, {
+      type: SearchTypeEnum.SCAN_ALL,
+      formValue: {
+        selectedType: this.types.length > 0 ? this.types[0] : '',
+      },
+      data: {
+        items,
+        lastKey: result.lastKey,
+      },
+    });
+    this.hasLastKey = !!result.lastKey;
+    this.displayResult(items);
   }
 
   async scanByType() {
@@ -211,13 +272,54 @@ export class TablesRouteBrowseComponent implements OnInit {
         filterValue: [this.scanForm.controls['selectedType'].value],
       })
     );
-    this.displayResult(result.items);
     this.currentSearch = 0;
     this.tablesSearchHistoryService.add(this.table, {
       type: SearchTypeEnum.SCAN,
       formValue: this.scanForm.value,
       data: result,
     });
+    this.hasLastKey = !!result.lastKey;
+    this.displayResult(result.items);
+  }
+
+  async scanByTypeMore(search: SavedSearch) {
+    const result = await firstValueFrom(
+      this.tablesSearchService.scan(this.table, {
+        filterVariable: 'TYPE',
+        filterCondition: FilterConditionEnum.EQ,
+        filterValue: [this.scanForm.controls['selectedType'].value],
+        lastKey: search.data.lastKey,
+      })
+    );
+    const items = search.data.items.concat(result.items);
+    this.tablesSearchHistoryService.set(this.table, this.currentSearch, {
+      type: SearchTypeEnum.SCAN,
+      formValue: this.scanForm.value,
+      data: {
+        items,
+        lastKey: result.lastKey,
+      },
+    });
+    this.hasLastKey = !!result.lastKey;
+    this.displayResult(items);
+  }
+
+  loadMore() {
+    const search = this.tablesSearchHistoryService.get(
+      this.table,
+      this.currentSearch
+    );
+    switch (search.type) {
+      case SearchTypeEnum.QUERY:
+        this.queryMore(search);
+        break;
+      case SearchTypeEnum.SCAN_ALL:
+        this.scanAllMore(search);
+        break;
+      case SearchTypeEnum.SCAN:
+        this.scanByTypeMore(search);
+        break;
+    }
   }
 
   private getPreSortList() {
@@ -287,7 +389,7 @@ export class TablesRouteBrowseComponent implements OnInit {
         break;
       case 'q':
         const pks = this.indices.map((i) => i.keySchema[0].attributeName);
-        if (pks.indexOf(event.colDef.field) > -1) {
+        if (pks.indexOf(event.colDef.field) > -1 && event.value) {
           this.queryForm.patchValue({
             selectedPK: event.colDef.field,
             selectedPKValue: event.value,
@@ -295,7 +397,9 @@ export class TablesRouteBrowseComponent implements OnInit {
           });
           this.query();
         } else {
-          this.toaster.showError('Not on partition key column');
+          this.toaster.showError(
+            'Not on partition key column or value is empty'
+          );
         }
         break;
       case 's':

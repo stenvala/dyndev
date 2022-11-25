@@ -40,6 +40,7 @@ class TableScanRequestDTO(BaseDTO):
     filter_variable: Optional[str]
     filter_value: Optional[List[Any]]
     filter_condition: Optional[FilterConditionEnum]
+    last_key: Optional[str]
 
 
 class TableQueryRequestDTO(BaseDTO):
@@ -49,6 +50,7 @@ class TableQueryRequestDTO(BaseDTO):
     sk_value: Optional[str]
     sk_condition: Optional[QueryConditionEnum]
     index_name: Optional[str]
+    last_key: Optional[str]
 
 
 class TableItemsDTO(BaseDTO):

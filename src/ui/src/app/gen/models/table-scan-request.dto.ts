@@ -5,4 +5,5 @@ export interface TableScanRequestDTO {
   filterVariable?: string;
   filterValue?: Array<unknown>;
   filterCondition?: FilterConditionEnum;
+  lastKey?: string;
 }
