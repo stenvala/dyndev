@@ -1,16 +1,16 @@
 import { Routes } from '@angular/router';
-import { TablesRouteBrowseComponent } from '@tables/index';
-import { TablesRouteIndicesComponent } from '@tables/index';
-import { SampleAppRouteMainComponent } from '@sample-app/index';
-import { GuideRouteHomeComponent } from '@guide/index';
+import { TablesRouteEditComponent } from '@tables/index';
 import { GuideRouteBasicsComponent } from '@guide/index';
-import { TablesRouteHomeComponent } from '@tables/index';
 import { GuideRouteCdkComponent } from '@guide/index';
 import { GuideRouteAboutComponent } from '@guide/index';
-import { TablesRouteEditComponent } from '@tables/index';
+import { TablesRouteIndicesComponent } from '@tables/index';
+import { TablesRouteBrowseComponent } from '@tables/index';
+import { GuideRouteHomeComponent } from '@guide/index';
+import { GuideRoutePythonComponent } from '@guide/index';
 import { SampleAppRouteShowNotesComponent } from '@sample-app/index';
 import { TablesRouteSchemaComponent } from '@tables/index';
-import { GuideRoutePythonComponent } from '@guide/index';
+import { SampleAppRouteMainComponent } from '@sample-app/index';
+import { TablesRouteHomeComponent } from '@tables/index';
 
 export const ROUTES: Routes = [
   {
@@ -42,7 +42,7 @@ export const ROUTES: Routes = [
     component: TablesRouteSchemaComponent,
   },
   {
-    path: 'tables/:table/edit/pk/:pk/sk/:sk',
+    path: 'tables/:table/edit/pk/:pkKey/:pk/sk/:skKey/:sk',
     canActivate: [],
     canDeactivate: [],
     data: {},

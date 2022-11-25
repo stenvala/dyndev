@@ -20,8 +20,8 @@ const stringify = require('json-stable-stringify');
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TablesRouteEditComponent implements OnInit {
-  private pk: string = 'PK';
-  private sk: string = 'SK';
+  private pkKey!: string;
+  private skKey!: string;
   private pkValue!: string;
   private skValue!: string;
   private table!: string;
@@ -39,6 +39,8 @@ export class TablesRouteEditComponent implements OnInit {
 
   ngOnInit() {
     this.tablesService.setTablesToSideNav();
+    this.pkKey = this.nav.params$.value['pkKey'];
+    this.skKey = this.nav.params$.value['skKey'];
     this.pkValue = this.nav.params$.value['pk'];
     this.skValue = this.nav.params$.value['sk'];
     this.table = this.nav.params$.value['table'];
@@ -50,9 +52,9 @@ export class TablesRouteEditComponent implements OnInit {
     const data = await firstValueFrom(
       this.tablesSearchService.get(
         this.table,
-        this.pk,
+        this.pkKey,
         this.pkValue,
-        this.sk,
+        this.skKey,
         this.skValue
       )
     );

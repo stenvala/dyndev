@@ -39,6 +39,7 @@ export class TablesSearchHistoryService {
   init(tableName: string) {
     if (!this.count.has(tableName)) {
       this.count.set(tableName, 0);
+      this.searches[tableName] = [];
     } else {
       this.count.set(tableName, this.searches[tableName].length);
     }

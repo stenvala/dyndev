@@ -17,7 +17,7 @@
         "component": "TablesRouteSchemaComponent"
       },
       "edit": {
-        "path+": "/:table/edit/pk/:pk/sk/:sk",
+        "path+": "/:table/edit/pk/:pkKey/:pk/sk/:skKey/:sk",
         "component": "TablesRouteEditComponent"
       }
     }

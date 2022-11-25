@@ -6,6 +6,7 @@ from shared.dynamo.client import get_table, get_client
 import json
 from decimal import Decimal
 
+PRIMARY_INDEX_NAME = "PRIMARY"
 
 def get_all_items(table_name: str) -> List[dict]:
     table = get_table(table_name)
@@ -55,11 +56,13 @@ def remove_table(table_name: str) -> None:
 def get_indices(table_name: str) -> TableIndicesDTO:
     table = get_table(table_name)
     indices = table.global_secondary_indexes
+    if indices is None:
+        return TableIndicesDTO(collection=[])
     indices.sort(key=operator.itemgetter("IndexName"))
     indices = TableIndicesDTO(collection=pascal_to_camel_obj(indices))
     indices.collection = [
         TableIndexDTO(
-            index_name="PRIMARY",
+            index_name=PRIMARY_INDEX_NAME,
             index_size_bytes=table.table_size_bytes,
             item_count=table.item_count,
             key_schema=[pascal_to_camel_obj(i) for i in table.key_schema],

@@ -6,7 +6,7 @@ from mypy_boto3_dynamodb.service_resource import Table
 
 def get_client() -> DynamoDBClient:
     url = os.environ.get("DYNAMO_HOST", "localhost")
-    port = os.environ.get("DYNAMO_PORT", 8000)
+    port = os.environ.get("DYNAMO_PORT", 19702)
     return boto3.client(
         "dynamodb",
         endpoint_url=f"http://{url}:{port}",
@@ -18,7 +18,7 @@ def get_client() -> DynamoDBClient:
 
 def get_resource() -> DynamoDBServiceResource:
     url = os.environ.get("DYNAMO_HOST", "localhost")
-    port = os.environ.get("DYNAMO_PORT", 8000)
+    port = os.environ.get("DYNAMO_PORT", 19702)
     return boto3.resource(
         "dynamodb",
         endpoint_url=f"http://{url}:{port}",

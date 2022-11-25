@@ -9,7 +9,7 @@ from dto.table import (
 from shared.dynamo.client import get_table
 import json
 
-from shared.dynamo.common import sanitize_output
+from shared.dynamo.common import sanitize_output, PRIMARY_INDEX_NAME
 from shared.enums import FilterConditionEnum
 
 
@@ -37,7 +37,7 @@ def bl_query(table_name: str, dto: TableQueryRequestDTO) -> TableItemsDTO:
             }
         }
     }
-    if dto.index_name:
+    if dto.index_name and dto.index_name != PRIMARY_INDEX_NAME:
         kwargs["IndexName"] = dto.index_name
     if dto.sk_value:
         kwargs["KeyConditions"][dto.sk] = {

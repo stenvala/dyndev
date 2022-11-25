@@ -5,6 +5,9 @@
 </div>
 
 <mat-card *ngIf="indices">
+  <div *ngIf="indices.length === 0">
+    Something is wrong, there are no indices in this table.
+  </div>
   <div *ngFor="let i of indices">
     <h2>{{ i.indexName }}</h2>
     <ul>

@@ -49,4 +49,4 @@ class TaskDTO(BaseDTO):
 
 
 class TasksDTO(BaseDTO):
-    collection: list[TaskDTO]
+    collection: List[TaskDTO]

@@ -4,7 +4,11 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { FilterConditionEnum, TableQueryRequestDTO } from '@gen/models';
+import {
+  FilterConditionEnum,
+  TableIndexDTO,
+  TableQueryRequestDTO,
+} from '@gen/models';
 import { NavigationService } from '@routing/navigation.service';
 import {
   SearchTypeEnum,
@@ -33,10 +37,6 @@ interface ComponentState {
   isQueryOpen: boolean;
 }
 const CS_KEY = 'TABLE_ROUTES_STATE';
-const PK_VALUES = [
-  'PK',
-  ...Array.apply(null, Array(5)).map((val, i) => `GSI${i + 1}PK`),
-];
 
 @Component({
   templateUrl: './tables-route-browse.component.html',
@@ -47,7 +47,7 @@ export class TablesRouteBrowseComponent implements OnInit {
   rowData?: object[];
   colDefs?: ColDef[];
   state!: ComponentState;
-  readonly pkValues = PK_VALUES;
+  indices: TableIndexDTO[] = [];
   types: string[] = [];
   queryForm = this.fb.group({
     selectedPK: 'PK',
@@ -93,8 +93,15 @@ export class TablesRouteBrowseComponent implements OnInit {
     LifeCyclesUtil.sub([this, this.cdr], this.nav.params$, async (params) => {
       this.table = params['table'] as string;
       if (this.table) {
+        this.indices = await firstValueFrom(
+          this.tablesService.getIndices(this.table)
+        );
+        const selectedPK =
+          this.indices.length > 0
+            ? this.indices[0].keySchema[0].attributeName
+            : '';
         this.queryForm.patchValue({
-          selectedPK: 'PK',
+          selectedPK,
           selectedPKValue: '',
           selectedSKValue: '',
         });
@@ -157,14 +164,13 @@ export class TablesRouteBrowseComponent implements OnInit {
       pkValue: this.queryForm.controls['selectedPKValue'].value,
     };
     const pk = this.queryForm.controls['selectedPK'].value;
-    let sk = 'SK';
-    if (pk !== 'PK') {
-      sk = pk.replace('PK', 'SK');
-      request.indexName = pk.replace('PK', '');
-    }
+    const index = this.indices.find(
+      (i) => i.keySchema[0].attributeName === pk
+    )!;
+    request.indexName = index.indexName;
     const skValue = this.queryForm.controls['selectedSKValue'].value;
     if (skValue) {
-      request.sk = sk;
+      request.sk = index.keySchema[1].attributeName;
       request.skValue = skValue;
       request.skCondition = this.queryForm.controls['selectedSK'].value;
     }
@@ -214,15 +220,23 @@ export class TablesRouteBrowseComponent implements OnInit {
     });
   }
 
+  private getPreSortList() {
+    return [
+      'TYPE',
+      ...this.indices.map((i) => i.keySchema.map((j) => j.attributeName)),
+    ].flat();
+  }
+
   private displayResult(items: object[]) {
-    const columns = collectColumns(items);
+    const columns = collectColumns(this.getPreSortList(), items);
     this.colDefs = columns.map((i) => {
       return {
         field: i,
         headerName: i,
       };
     });
-    if (this.colDefs.length > 0) {
+    const hasType = !!this.colDefs.find((i) => i.field! === 'TYPE');
+    if (this.colDefs.length > 0 && hasType) {
       this.colDefs[0].pinned = 'left';
     }
     this.colDefs.push({
@@ -230,6 +244,7 @@ export class TablesRouteBrowseComponent implements OnInit {
       pinned: 'right',
       width: 100,
       cellRenderer: TablesViewGridActionsCellComponent,
+      indices: this.indices,
       delete: this.deleteRow.bind(this),
     } as any);
     this.rowData = items;
@@ -238,7 +253,8 @@ export class TablesRouteBrowseComponent implements OnInit {
   }
 
   exportToExcel() {
-    const types = collectColumns(this.rowData!, 'TYPE');
+    const preSort = this.getPreSortList();
+    const types = collectColumns(preSort, this.rowData!, 'TYPE');
     const workbook = XLSX.utils.book_new();
     // Add all
     const worksheet = XLSX.utils.json_to_sheet(this.rowData!, {
@@ -248,7 +264,7 @@ export class TablesRouteBrowseComponent implements OnInit {
     // Add by types
     types.forEach((t) => {
       const data = this.rowData!.filter((i: any) => i['TYPE'] === t);
-      const header = collectColumns(data);
+      const header = collectColumns(preSort, data);
       const worksheet = XLSX.utils.json_to_sheet(data, {
         header,
       });
@@ -270,12 +286,16 @@ export class TablesRouteBrowseComponent implements OnInit {
         this.toaster.showSuccess(`Value ${value} copied to clipboard.`);
         break;
       case 'q':
-        if (event.colDef.field === 'PK') {
+        const pks = this.indices.map((i) => i.keySchema[0].attributeName);
+        if (pks.indexOf(event.colDef.field) > -1) {
           this.queryForm.patchValue({
+            selectedPK: event.colDef.field,
             selectedPKValue: event.value,
             selecteSKValue: '',
           });
           this.query();
+        } else {
+          this.toaster.showError('Not on partition key column');
         }
         break;
       case 's':
@@ -284,6 +304,8 @@ export class TablesRouteBrowseComponent implements OnInit {
             selectedType: event.value,
           });
           this.scanByType();
+        } else {
+          this.toaster.showError('Not on TYPE column');
         }
     }
   }
@@ -310,7 +332,11 @@ export class TablesRouteBrowseComponent implements OnInit {
   }
 }
 
-function collectColumns(data: object[], columnHeader?: string) {
+function collectColumns(
+  preSort: string[],
+  data: object[],
+  columnHeader?: string
+) {
   const columns = [
     ...data.reduce((previous: Set<string>, row: object) => {
       const keys = !!columnHeader
@@ -319,30 +345,23 @@ function collectColumns(data: object[], columnHeader?: string) {
       return new Set([...previous, ...keys]);
     }, new Set<string>()),
   ];
-  columns.sort(sortColumn);
+  columns.sort(getSort(preSort));
   return columns;
 }
 
-const PRE_SORT = [
-  'TYPE',
-  'PK',
-  'SK',
-  ...Array.apply(null, Array(5)).map((val, i) => [
-    `GSI${i + 1}PK`,
-    `GSI${i + 1}SK`,
-  ]),
-].flat();
-const PRE_SORT_SET = new Set<string>(PRE_SORT);
-function sortColumn(a: string, b: string) {
-  if (PRE_SORT_SET.has(a) || PRE_SORT_SET.has(b)) {
-    for (let i = 0; i < PRE_SORT.length; i++) {
-      if (a === PRE_SORT[i]) {
-        return -1;
-      }
-      if (b === PRE_SORT[i]) {
-        return 1;
+function getSort(preSort: string[]) {
+  const preSortSet = new Set(preSort);
+  return function sortColumn(a: string, b: string) {
+    if (preSortSet.has(a) || preSortSet.has(b)) {
+      for (let i = 0; i < preSort.length; i++) {
+        if (a === preSort[i]) {
+          return -1;
+        }
+        if (b === preSort[i]) {
+          return 1;
+        }
       }
     }
-  }
-  return a < b ? -1 : 1;
+    return a < b ? -1 : 1;
+  };
 }

@@ -1,22 +1,17 @@
 <div class="margin-bottom">
-  <button
-    class="margin-right"
-    mat-stroked-button
-    (click)="accordion?.openAll()"
-  >
+  <button class="margin-right" mat-stroked-button (click)="accordion?.openAll()">
     Expand All
   </button>
-  <button
-    class="margin-right"
-    mat-stroked-button
-    (click)="accordion?.closeAll()"
-  >
+  <button class="margin-right" mat-stroked-button (click)="accordion?.closeAll()">
     Collapse All
   </button>
   <span class="margin-right" *ngIf="updated"> Updated {{ updated }} </span>
   <button mat-stroked-button (click)="refresh()">Refresh</button>
 </div>
 <ng-container *ngIf="schema">
+  <mat-card *ngIf="schema.schema.types.length === 0">
+    Cannot determine schema. There are are no rows with TYPE attribute.
+  </mat-card>
   <mat-accordion multi>
     <mat-expansion-panel *ngFor="let i of schema.schema.types">
       <mat-expansion-panel-header>

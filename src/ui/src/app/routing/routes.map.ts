@@ -11,7 +11,7 @@ export const ROUTE_MAP = {
       PATH: '/tables/:table/schema',
     },
     EDIT: {
-      PATH: '/tables/:table/edit/pk/:pk/sk/:sk',
+      PATH: '/tables/:table/edit/pk/:pkKey/:pk/sk/:skKey/:sk',
     },
   },
   GUIDE: {

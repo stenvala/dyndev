@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { TableIndexDTO } from '@gen/models';
 import { NavigationService } from '@routing/navigation.service';
 import { ROUTE_MAP } from '@routing/routes.map';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
@@ -31,9 +32,14 @@ export class TablesViewGridActionsCellComponent
   }
 
   edit() {
+    const indices = (this.params.colDef! as any).indices as TableIndexDTO[];
+    const pkKey = indices[0].keySchema[0].attributeName;
+    const skKey = indices[0].keySchema[1].attributeName;
     this.nav.goto(ROUTE_MAP.TABLES.EDIT, {
-      pk: this.params.data['PK'],
-      sk: this.params.data['SK'],
+      pkKey,
+      skKey,
+      pk: this.params.data[pkKey],
+      sk: this.params.data[skKey],
     });
   }
   delete() {
