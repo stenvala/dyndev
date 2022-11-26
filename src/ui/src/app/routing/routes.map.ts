@@ -27,8 +27,8 @@ export const ROUTE_MAP = {
     CDK: {
       PATH: '/guide/cdk',
     },
-    ABOUT: {
-      PATH: '/guide/about',
+    RULES: {
+      PATH: '/guide/rules',
     },
   },
   SAMPLE_APP: {
@@ -39,5 +39,8 @@ export const ROUTE_MAP = {
     STATUS: {
       PATH: '/sample-app/status/:status',
     },
+  },
+  ABOUT: {
+    PATH: '/about',
   },
 };

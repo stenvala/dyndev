@@ -9,6 +9,7 @@ import { GuideApiService } from '@gen/apis';
 import { firstValueFrom } from 'rxjs';
 
 import hljs from 'highlight.js';
+import { GuideNavService } from '@guide/services';
 
 @Component({
   selector: 'guide-show-code',
@@ -20,9 +21,14 @@ export class GuideShowCodeComponent implements OnInit {
   @Input() file!: string;
 
   content?: string;
-  constructor(private api: GuideApiService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private guideNav: GuideNavService,
+    private api: GuideApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   async ngOnInit() {
+    this.guideNav.setSideNav();
     this.content = (
       await firstValueFrom(this.api.getFileContent(this.file))
     ).content;

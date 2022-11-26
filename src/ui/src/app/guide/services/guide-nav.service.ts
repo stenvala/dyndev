@@ -28,8 +28,8 @@ const NAV: NavItem[] = [
     link: ROUTE_MAP.GUIDE.CDK,
   },
   {
-    label: 'About',
-    link: ROUTE_MAP.GUIDE.ABOUT,
+    label: 'Rules',
+    link: ROUTE_MAP.GUIDE.RULES,
   },
 ];
 

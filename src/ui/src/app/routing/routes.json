@@ -42,9 +42,9 @@
         "path+": "/cdk",
         "component": "GuideRouteCdkComponent"
       },
-      "about": {
-        "path+": "/about",
-        "component": "GuideRouteAboutComponent"
+      "rules": {
+        "path+": "/rules",
+        "component": "GuideRouteRulesComponent"
       }
     }
   },
@@ -62,5 +62,10 @@
         "component": "SampleAppRouteShowNotesComponent"
       }
     }
+  },
+  "about": {
+    "path": "about",
+    "component": "AboutRouteComponent",
+    "import": "@about/index"
   }
 }

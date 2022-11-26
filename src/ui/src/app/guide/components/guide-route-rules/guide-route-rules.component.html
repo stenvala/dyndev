@@ -1,0 +1,23 @@
+<mat-card>
+  <h1>The rules of the single table design</h1>
+
+  <ol>
+    <li>
+      Have attribute TYPE in all the rows. It defines what kind of row is in
+      question.
+    </li>
+    <li>Have attribute id in all the rows.</li>
+    <li>Name keys with uppercase, preferably PK, SK, GSI1PK, GSI1SK, ...</li>
+    <li>
+      Use only global secondary indices, not local. Project all attributes to
+      global secondary indices.
+    </li>
+    <li>
+      Keys consist of # separated strings (and are therefore always of type
+      string). You can use in the keys UPPERCASE constants and any simple
+      attribute (string, number, boolean) that exists in the row or it's
+      lowercase or uppercase variant.
+    </li>
+    <li>Study DynamoDB before you start using it.</li>
+  </ol>
+</mat-card>

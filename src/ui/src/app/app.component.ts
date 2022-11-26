@@ -45,6 +45,10 @@ export class AppComponent implements OnInit {
       label: 'Sample app',
       link: ROUTE_MAP.SAMPLE_APP,
     },
+    {
+      label: 'About',
+      link: ROUTE_MAP.ABOUT,
+    },
   ];
 
   constructor(
