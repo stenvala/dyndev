@@ -7,7 +7,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { SideNavContent, SideNavItem, SideNavService } from '@core/services';
+import { SideNavContent, SideNavService } from '@core/services';
 import { BusyService, ControlStateService } from '@lib/services';
 import { NavigationService, ROUTE_MAP } from '@routing/index';
 import { firstValueFrom } from 'rxjs';
@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
   isDrawerOpened = this.cs.get(CS_KEY, true);
   sideNav?: SideNavContent;
   activeLink = '';
+  licenseText?: string;
 
   links: Link[] = [
     {
@@ -87,9 +88,12 @@ export class AppComponent implements OnInit {
   }
 
   private async solveTokenNeed() {
-    HttpConfigInterceptor.isTokenNeeded = (
-      await firstValueFrom(this.http.get<{ is: boolean }>(TOKEN_URL))
-    ).is;
+    const response = await firstValueFrom(
+      this.http.get<{ is: boolean; licenseText: string }>(TOKEN_URL)
+    );
+    this.licenseText = response.licenseText;
+    this.cdr.detectChanges();
+    HttpConfigInterceptor.isTokenNeeded = response.is;
     HttpConfigInterceptor.isTokenNeededSolved$.next(true);
   }
 }

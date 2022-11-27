@@ -38,6 +38,8 @@ jmespath==1.0.1
     #   botocore
 mypy-boto3-dynamodb==1.25.0
     # via boto3-stubs
+pycrypto==2.6.1
+    # via -r requirements.in
 pydantic==1.10.2
     # via
     #   -r requirements.in
