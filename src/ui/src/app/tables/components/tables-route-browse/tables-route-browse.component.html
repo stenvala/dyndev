@@ -130,7 +130,9 @@
     <button mat-icon-button (click)="clearSearchHistory()" class="margin-right">
       <mat-icon fontSet="fa" fontIcon="fa-times"> </mat-icon>
     </button>
-    <span> keyboard: c = copy, s = scan, q = query </span>
+    <span>
+      keyboard: c = copy, s = scan, q = query, p = previous, n = next, v = view
+    </span>
     <span> | </span>
     <span> showing {{ rowData.length }} rows </span>
   </div>
@@ -140,6 +142,7 @@
     [rowData]="rowData"
     [columnDefs]="colDefs"
     (cellKeyPress)="onCellKeyPress($event)"
+    (gridReady)="onGridReady($event)"
   >
   </ag-grid-angular>
 </mat-card>

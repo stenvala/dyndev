@@ -18,6 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TablesViewGridActionsCellComponent } from './components/tables-view-grid-actions-cell/tables-view-grid-actions-cell.component';
 import { TablesRouteEditComponent } from './components/tables-route-edit/tables-route-edit.component';
 import { TablesRowSchemaComponent } from './components/tables-row-schema/tables-row-schema.component';
+import { TablesDialogViewRowComponent } from './components/tables-dialog-view-row/tables-dialog-view-row.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { TablesRowSchemaComponent } from './components/tables-row-schema/tables-
     TablesViewGridActionsCellComponent,
     TablesRouteEditComponent,
     TablesRowSchemaComponent,
+    TablesDialogViewRowComponent,
   ],
   imports: [
     CommonModule,

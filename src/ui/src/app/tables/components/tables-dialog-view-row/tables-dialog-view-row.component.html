@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>Row data</h1>
+<div mat-dialog-content>
+  <pre>{{ toShow }}</pre>
+</div>
+<div mat-dialog-actions>
+  <button
+    cdkFocusInitial
+    mat-flat-button
+    color="primary"
+    (click)="closeDialog()"
+  >
+    Close
+  </button>
+</div>

@@ -22,6 +22,9 @@ import {
   CellKeyPressEvent,
   ColDef,
   ICellRendererParams,
+  GridReadyEvent,
+  GridApi,
+  ColumnApi,
 } from 'ag-grid-community';
 import * as XLSX from 'xlsx';
 import {
@@ -32,6 +35,8 @@ import {
 import { FormBuilder, Validators } from '@angular/forms';
 import { TablesViewGridActionsCellComponent } from '../tables-view-grid-actions-cell/tables-view-grid-actions-cell.component';
 import { LifeCyclesUtil } from '@lib/util';
+import { MatDialog } from '@angular/material/dialog';
+import { TablesDialogViewRowComponent } from '../tables-dialog-view-row/tables-dialog-view-row.component';
 
 interface ComponentState {
   isScanOpen: boolean;
@@ -64,7 +69,10 @@ export class TablesRouteBrowseComponent implements OnInit {
   currentSearch = 0;
   searchCount = 0;
 
+  private gridApi?: GridApi;
+  private columnApi?: ColumnApi;
   private table!: string;
+
   constructor(
     private tablesService: TablesService,
     private tablesSearchService: TablesSearchService,
@@ -74,7 +82,8 @@ export class TablesRouteBrowseComponent implements OnInit {
     private cs: ControlStateService,
     private busy: BusyService,
     private toaster: ToasterService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -352,6 +361,9 @@ export class TablesRouteBrowseComponent implements OnInit {
     this.rowData = items;
     this.cdr.detectChanges();
     this.busy.hide();
+    setTimeout(() => {
+      this.focusFirstCell();
+    });
   }
 
   exportToExcel() {
@@ -376,6 +388,19 @@ export class TablesRouteBrowseComponent implements OnInit {
     XLSX.writeFile(workbook, 'Data.xlsx', { compression: true });
   }
 
+  onGridReady(event: GridReadyEvent) {
+    this.gridApi = event.api;
+    this.columnApi = event.columnApi;
+    this.focusFirstCell();
+  }
+
+  private focusFirstCell() {
+    this.gridApi!.setFocusedCell(
+      0,
+      (this.columnApi as any).columnModel.columnDefs[0].field
+    );
+  }
+
   onCellKeyPress(event: CellKeyPressEvent | any) {
     const field = event.colDef.field;
     if (!field || event.type !== 'cellKeyPress') {
@@ -389,11 +414,22 @@ export class TablesRouteBrowseComponent implements OnInit {
         break;
       case 'q':
         const pks = this.indices.map((i) => i.keySchema[0].attributeName);
+        const sks = this.indices.map((i) => i.keySchema[1].attributeName);
         if (pks.indexOf(event.colDef.field) > -1 && event.value) {
           this.queryForm.patchValue({
             selectedPK: event.colDef.field,
             selectedPKValue: event.value,
-            selecteSKValue: '',
+            selectedSKValue: '',
+          });
+          this.query();
+        } else if (sks.indexOf(event.colDef.field) > -1 && event.value) {
+          const index = sks.indexOf(event.colDef.field);
+          const pkField = this.indices[index].keySchema[0].attributeName;
+          this.queryForm.patchValue({
+            selectedPK: pkField,
+            selectedPKValue: event.data[pkField],
+            selectedSK: FilterConditionEnum.EQ,
+            selectedSKValue: event.value,
           });
           this.query();
         } else {
@@ -411,6 +447,31 @@ export class TablesRouteBrowseComponent implements OnInit {
         } else {
           this.toaster.showError('Not on TYPE column');
         }
+        break;
+      case 'n':
+        if (this.currentSearch > 0) {
+          this.populateSearchResultsFromIndex(this.currentSearch - 1);
+        }
+        break;
+      case 'p':
+        if (this.currentSearch + 1 < this.searchCount) {
+          this.populateSearchResultsFromIndex(this.currentSearch + 1);
+        }
+        break;
+      case 'v':
+        const focusedCell = this.gridApi!.getFocusedCell();
+        const dialogRef = this.dialog.open(TablesDialogViewRowComponent, {
+          data: {
+            row: event.data,
+          },
+          disableClose: true,
+        });
+        dialogRef.afterClosed().subscribe(() => {
+          this.gridApi!.setFocusedCell(
+            focusedCell!.rowIndex,
+            focusedCell!.column
+          );
+        });
     }
   }
 
