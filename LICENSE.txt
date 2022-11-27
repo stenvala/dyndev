@@ -18,4 +18,5 @@ IN THE SOFTWARE.
 ANY USE OF THE CODE IN SUBSTANTIAL PART IS PROHIBITED.
 
 If you wnat to use the software and / or the code in a company making revenue
-more than 10 M USD a year, please contact antti+dyndev@mail.mathcodingclub.com.
+more than 10 M USD a year, please contact antti+dyndev@mail.mathcodingclub.com 
+to purchase license.

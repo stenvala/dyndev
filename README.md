@@ -29,7 +29,8 @@ services:
     environment:
       DYNAMO_HOST: dynamo
       DYNAMO_PORT: 8000
-      DYNDEV_TOKEN: token
+      DYNDEV_TOKEN: <whatever-token-you-want>
+      DYNDEV_LICENSE: <license-str-or-don't provide if you don't have license>
     ports:
       - "17177:80"
 ```

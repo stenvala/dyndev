@@ -26,9 +26,18 @@ async def is_token_in_use():
         "DYNDEV_LICENSE",
         "",
     )
-    obj = AES.new(KEY, AES.MODE_CBC, "This is an IV456")
+    # Example license key
+    # license = "i/qeFS3i0wLPPHBjGPYITFNv7Ogk3ilsqwkyGbRhMuC2qLizPpZtbyVzb9jlEW8SwyaUHpkcW04Hg7lwIP/VuQ==#CPmxohoNwVojzCIalDxQ8g=="
+    if license != "":
+        data = license.split("#")
+        cipher = bytes(base64.b64decode(data[0]))
+        nonce = bytes(base64.b64decode(data[1]))
+        obj = AES.new(bytes(KEY, "utf-8"), AES.MODE_EAX, nonce)
+        # I don't understand, if I remove the next line this fails, if it's there all is ok
+        obj.decrypt(cipher)
+        license = obj.decrypt(cipher).decode("utf-8").strip()
     license_str = (
-        obj.decrypt(bytes(base64.b64decode(license))).decode("utf-8").strip()
+        license
         if license != ""
         else "This software is unlicensed! You may still have permission to use it for free."
     )
