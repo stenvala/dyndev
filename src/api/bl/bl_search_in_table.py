@@ -25,6 +25,22 @@ def bl_scan(table_name: str, dto: TableScanRequestDTO) -> TableItemsDTO:
                 ":value": dto.filter_value[0]
             }
             kwargs["FilterExpression"] = "#field = :value"
+        if dto.filter_condition == FilterConditionEnum.BEGINS_WITH:
+            kwargs["ExpressionAttributeValues"] = {
+                ":value": dto.filter_value[0]
+            }
+            kwargs["FilterExpression"] = "begins_with(#field, :value)"
+        if dto.filter_condition == FilterConditionEnum.GT:
+            kwargs["ExpressionAttributeValues"] = {
+                ":value": dto.filter_value[0]
+            }
+            kwargs["FilterExpression"] = "#field > :value"
+        if dto.filter_condition == FilterConditionEnum.LT:
+            kwargs["ExpressionAttributeValues"] = {
+                ":value": dto.filter_value[0]
+            }
+            kwargs["FilterExpression"] = "#field < :value"
+
     data = table.scan(**kwargs)
     last_key = data.get("LastEvaluatedKey")
     return TableItemsDTO(

@@ -19,6 +19,7 @@ import { TablesViewGridActionsCellComponent } from './components/tables-view-gri
 import { TablesRouteEditComponent } from './components/tables-route-edit/tables-route-edit.component';
 import { TablesRowSchemaComponent } from './components/tables-row-schema/tables-row-schema.component';
 import { TablesDialogViewRowComponent } from './components/tables-dialog-view-row/tables-dialog-view-row.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { TablesDialogViewRowComponent } from './components/tables-dialog-view-ro
     MatSelectModule,
     ReactiveFormsModule,
     MatInputModule,
+    MatAutocompleteModule,
   ],
 })
 export class TablesModule {}

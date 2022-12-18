@@ -6,6 +6,7 @@ export enum SearchTypeEnum {
   QUERY = 'QUERY',
   SCAN = 'SCAN',
   SCAN_ALL = 'SCAN_ALL',
+  SCAN_BY_ATTRIBUTE = 'SCAN_BY_ATTRIBUTE',
 }
 
 const MAX_SAVE_SEARCH_LENGTH = 10;

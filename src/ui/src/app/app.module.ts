@@ -25,6 +25,7 @@ import {
 } from '@angular/material/form-field';
 import { HttpConfigInterceptor } from './core';
 import { MatInputModule } from '@angular/material/input';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER } from '@angular/material/autocomplete';
 
 const FORM_FIELD_DEFAULTS: MatFormFieldDefaultOptions = {
   appearance: 'outline',
@@ -52,6 +53,7 @@ const FORM_FIELD_DEFAULTS: MatFormFieldDefaultOptions = {
     MarkdownModule.forRoot(),
   ],
   providers: [
+    MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER,
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: FORM_FIELD_DEFAULTS,

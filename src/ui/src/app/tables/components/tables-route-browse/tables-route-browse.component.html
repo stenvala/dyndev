@@ -79,6 +79,7 @@
   <div class="margin-bottom">
     <button mat-stroked-button (click)="scanAll()">All</button>
   </div>
+
   <form [formGroup]="scanForm">
     <div class="margin-bottom" *ngIf="types.length > 0">
       <mat-form-field appearance="fill" class="margin-right">
@@ -90,6 +91,46 @@
         </mat-select>
       </mat-form-field>
       <button mat-stroked-button (click)="scanByType()">Scan by type</button>
+    </div>
+  </form>
+
+  <form [formGroup]="scanForm">
+    <div class="margin-bottom" *ngIf="types.length > 0">
+      <mat-form-field appearance="fill" class="margin-right">
+        <mat-label>Attribute</mat-label>
+        <input
+          type="text"
+          matInput
+          formControlName="selectedField"
+          [matAutocomplete]="auto"
+        />
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+          <mat-option *ngFor="let i of optionAttributes | async" [value]="i">
+            {{ i }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="margin-right">
+        <mat-label>Condition</mat-label>
+        <mat-select formControlName="selectedComparator">
+          <mat-option *ngFor="let i of scanOptions" [value]="i">
+            {{ i }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="margin-right" appearance="fill">
+        <mat-label>Value</mat-label>
+        <input matInput type="text" formControlName="selectedValue" />
+        <button
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="queryForm.controls['selectedValue'].setValue('')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      <button mat-stroked-button (click)="scan()">Scan</button>
     </div>
   </form>
 </mat-expansion-panel>
@@ -131,7 +172,8 @@
       <mat-icon fontSet="fa" fontIcon="fa-times"> </mat-icon>
     </button>
     <span>
-      keyboard: c = copy, s = scan, q = query, p = previous, n = next, v = view
+      keyboard: c = copy, s = scan, q = query, p = previous, n = next, t = scan
+      by type, v = view
     </span>
     <span> | </span>
     <span> showing {{ rowData.length }} rows </span>

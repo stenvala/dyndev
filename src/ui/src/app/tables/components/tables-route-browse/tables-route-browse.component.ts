@@ -17,7 +17,7 @@ import {
   TablesSearchService,
   TablesService,
 } from '@tables/services';
-import { filter, firstValueFrom, map } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, map } from 'rxjs';
 import {
   CellKeyPressEvent,
   ColDef,
@@ -63,12 +63,23 @@ export class TablesRouteBrowseComponent implements OnInit {
   });
   scanForm = this.fb.group({
     selectedType: '',
+    selectedField: '',
+    selectedComparator: [FilterConditionEnum.BEGINS_WITH],
+    selectedValue: '',
   });
+  optionAttributes = new BehaviorSubject<string[]>([]);
   matchOptions = [FilterConditionEnum.BEGINS_WITH, FilterConditionEnum.EQ];
+  scanOptions = [
+    FilterConditionEnum.BEGINS_WITH,
+    FilterConditionEnum.EQ,
+    FilterConditionEnum.GT,
+    FilterConditionEnum.LT,
+  ];
   hasLastKey = false;
   currentSearch = 0;
   searchCount = 0;
 
+  private currentColumns: string[] = [];
   private gridApi?: GridApi;
   private columnApi?: ColumnApi;
   private table!: string;
@@ -125,6 +136,17 @@ export class TablesRouteBrowseComponent implements OnInit {
         }
       }
     });
+    LifeCyclesUtil.sub(
+      this,
+      this.scanForm.controls['selectedField'].valueChanges,
+      (value: string) => {
+        const lowerValue = value.toLocaleLowerCase();
+        const filtered = this.currentColumns.filter((i) =>
+          i.toLocaleLowerCase().includes(lowerValue)
+        );
+        this.optionAttributes.next(filtered);
+      }
+    );
   }
 
   ngOnDestroy() {
@@ -313,6 +335,46 @@ export class TablesRouteBrowseComponent implements OnInit {
     this.displayResult(items);
   }
 
+  async scan() {
+    const result = await firstValueFrom(
+      this.tablesSearchService.scan(this.table, {
+        filterVariable: this.scanForm.controls['selectedField'].value,
+        filterCondition: this.scanForm.controls['selectedComparator'].value,
+        filterValue: [this.scanForm.controls['selectedValue'].value],
+      })
+    );
+    this.currentSearch = 0;
+    this.tablesSearchHistoryService.add(this.table, {
+      type: SearchTypeEnum.SCAN_BY_ATTRIBUTE,
+      formValue: this.scanForm.value,
+      data: result,
+    });
+    this.hasLastKey = !!result.lastKey;
+    this.displayResult(result.items);
+  }
+
+  async scanMore(search: SavedSearch) {
+    const result = await firstValueFrom(
+      this.tablesSearchService.scan(this.table, {
+        filterVariable: this.scanForm.controls['selectedField'].value,
+        filterCondition: this.scanForm.controls['selectedComparator'].value,
+        filterValue: [this.scanForm.controls['selectedValue'].value],
+        lastKey: search.data.lastKey,
+      })
+    );
+    const items = search.data.items.concat(result.items);
+    this.tablesSearchHistoryService.set(this.table, this.currentSearch, {
+      type: SearchTypeEnum.SCAN_BY_ATTRIBUTE,
+      formValue: this.scanForm.value,
+      data: {
+        items,
+        lastKey: result.lastKey,
+      },
+    });
+    this.hasLastKey = !!result.lastKey;
+    this.displayResult(items);
+  }
+
   loadMore() {
     const search = this.tablesSearchHistoryService.get(
       this.table,
@@ -328,6 +390,9 @@ export class TablesRouteBrowseComponent implements OnInit {
       case SearchTypeEnum.SCAN:
         this.scanByTypeMore(search);
         break;
+      case SearchTypeEnum.SCAN_BY_ATTRIBUTE:
+        this.scanMore(search);
+        break;
     }
   }
 
@@ -339,8 +404,8 @@ export class TablesRouteBrowseComponent implements OnInit {
   }
 
   private displayResult(items: object[]) {
-    const columns = collectColumns(this.getPreSortList(), items);
-    this.colDefs = columns.map((i) => {
+    this.currentColumns = collectColumns(this.getPreSortList(), items);
+    this.colDefs = this.currentColumns.map((i) => {
       return {
         field: i,
         headerName: i,
@@ -359,6 +424,7 @@ export class TablesRouteBrowseComponent implements OnInit {
       delete: this.deleteRow.bind(this),
     } as any);
     this.rowData = items;
+    this.optionAttributes.next(this.currentColumns);
     this.cdr.detectChanges();
     this.busy.hide();
     setTimeout(() => {
@@ -439,13 +505,21 @@ export class TablesRouteBrowseComponent implements OnInit {
         }
         break;
       case 's':
-        if (event.colDef.field === 'TYPE') {
+        this.scanForm.patchValue({
+          selectedValue: event.value,
+          selectedField: event.colDef.field,
+        });
+        this.scan();
+        break;
+      case 't':
+        const type = event.data['TYPE'];
+        if (type) {
           this.scanForm.patchValue({
-            selectedType: event.value,
+            selectedType: type,
           });
           this.scanByType();
         } else {
-          this.toaster.showError('Not on TYPE column');
+          this.toaster.showError('There is no TYPE column for the row');
         }
         break;
       case 'n':
